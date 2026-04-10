@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Studio Beauty — Salão de Beleza</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    /* ===== VARIABLES ===== */
+    :root {
+      --rose:        #C97A74;
+      --rose-dark:   #A05850;
+      --rose-light:  #F5E6E4;
+      --gold:        #C4A25A;
+      --gold-light:  #F5EDDA;
+      --dark:        #2D1A18;
+      --text:        #4A3330;
+      --text-muted:  #8A6A67;
+      --bg:          #FDF7F5;
+      --white:       #FFFFFF;
+      --border:      #EDD5D0;
+      --shadow:      rgba(201,122,116,.18);
+      --radius:      12px;
+      --radius-lg:   20px;
+      --transition:  .3s ease;
+    }
+
+    /* ===== RESET ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+    a { text-decoration: none; color: inherit; }
+    ul { list-style: none; }
+    img { max-width: 100%; display: block; }
+
+    /* ===== TYPOGRAPHY ===== */
+    h1, h2, h3 { font-family: 'Playfair Display', serif; line-height: 1.25; }
+    .section-title { font-size: clamp(1.8rem, 4vw, 2.6rem); color: var(--dark); text-align: center; margin-bottom: .5rem; }
+    .section-subtitle { text-align: center; color: var(--text-muted); font-size: .95rem; margin-bottom: 3rem; }
+    .section-subtitle span { color: var(--rose); font-weight: 600; }
+
+    /* ===== LAYOUT ===== */
+    section { padding: 80px 20px; }
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    /* ===== HEADER ===== */
+    header {
+      position: sticky; top: 0; z-index: 999;
+      background: rgba(253,247,245,.96);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 24px;
+    }
+    .header-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo-icon { width: 44px; height: 44px; background: linear-gradient(135deg, var(--rose), var(--rose-dark)); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .logo-icon i { color: #fff; font-size: 1.2rem; }
+    .logo-text h1 { font-size: 1.3rem; color: var(--dark); font-weight: 700; line-height: 1; }
+    .logo-text span { font-size: .7rem; color: var(--rose); font-family: 'Poppins', sans-serif; letter-spacing: 2px; text-transform: uppercase; }
+    nav { display: flex; gap: 2rem; align-items: center; }
+    nav a { font-size: .88rem; font-weight: 500; color: var(--text-muted); transition: color var(--transition); }
+    nav a:hover { color: var(--rose); }
+    .btn-nav { background: var(--rose); color: #fff !important; padding: 8px 18px; border-radius: 50px; transition: background var(--transition) !important; }
+    .btn-nav:hover { background: var(--rose-dark) !important; }
+    .menu-toggle { display: none; background: none; border: none; cursor: pointer; padding: 4px; }
+    .menu-toggle span { display: block; width: 24px; height: 2px; background: var(--dark); margin: 5px 0; border-radius: 2px; transition: var(--transition); }
+
+    /* ===== HERO ===== */
+    #hero {
+      min-height: 92vh;
+      display: flex; align-items: center;
+      background: linear-gradient(145deg, #FDF7F5 0%, #F5E6E4 50%, #EDD5D0 100%);
+      padding: 60px 24px;
+      position: relative; overflow: hidden;
+    }
+    #hero::before {
+      content: '';
+      position: absolute; top: -80px; right: -80px;
+      width: 420px; height: 420px;
+      background: radial-gradient(circle, rgba(201,122,116,.18) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    #hero::after {
+      content: '';
+      position: absolute; bottom: -100px; left: -60px;
+      width: 320px; height: 320px;
+      background: radial-gradient(circle, rgba(196,162,90,.12) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .hero-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; position: relative; z-index: 1; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--white); border: 1px solid var(--border); border-radius: 50px; padding: 6px 14px; font-size: .8rem; color: var(--rose); font-weight: 500; margin-bottom: 1.2rem; }
+    .hero-title { font-size: clamp(2.2rem, 5vw, 3.8rem); color: var(--dark); margin-bottom: 1rem; }
+    .hero-title em { color: var(--rose); font-style: italic; }
+    .hero-desc { color: var(--text-muted); font-size: .97rem; margin-bottom: 2rem; max-width: 480px; }
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 13px 26px; border-radius: 50px; font-size: .9rem; font-weight: 600; cursor: pointer; border: none; transition: all var(--transition); text-decoration: none; }
+    .btn-primary { background: var(--rose); color: #fff; box-shadow: 0 4px 20px var(--shadow); }
+    .btn-primary:hover { background: var(--rose-dark); transform: translateY(-2px); box-shadow: 0 8px 28px var(--shadow); }
+    .btn-whatsapp { background: #25D366; color: #fff; }
+    .btn-whatsapp:hover { background: #1EBE5D; transform: translateY(-2px); }
+    .btn-outline { background: transparent; color: var(--rose); border: 2px solid var(--rose); }
+    .btn-outline:hover { background: var(--rose); color: #fff; }
+
+    .hero-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      box-shadow: 0 20px 60px var(--shadow);
+    }
+    .hero-card-title { font-size: 1rem; color: var(--rose); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 8px; font-family: 'Poppins', sans-serif; font-weight: 600; }
+    .hours-list { display: grid; gap: .7rem; }
+    .hours-item { display: flex; justify-content: space-between; align-items: center; padding: .6rem 1rem; background: var(--bg); border-radius: var(--radius); }
+    .hours-day { font-size: .85rem; color: var(--text); font-weight: 500; }
+    .hours-time { font-size: .83rem; color: var(--text-muted); }
+    .hours-badge { font-size: .72rem; background: var(--rose-light); color: var(--rose); padding: 2px 8px; border-radius: 50px; font-weight: 600; }
+    .hours-badge.closed { background: #F3E8E8; color: #B05050; }
+
+    /* ===== ABOUT STRIP ===== */
+    .about-strip { background: var(--dark); padding: 40px 24px; }
+    .about-strip .container { display: grid; grid-template-columns: repeat(3,1fr); gap: 2rem; text-align: center; }
+    .about-item i { font-size: 1.8rem; color: var(--gold); margin-bottom: .6rem; }
+    .about-item h3 { color: #fff; font-family: 'Poppins', sans-serif; font-size: .95rem; font-weight: 600; }
+    .about-item p { color: rgba(255,255,255,.6); font-size: .82rem; }
+
+    /* ===== SERVICES ===== */
+    #servicos { background: var(--white); }
+    .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.2rem; }
+    .service-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.3rem 1.5rem;
+      display: flex; align-items: center; gap: 1rem;
+      transition: all var(--transition);
+      cursor: default;
+    }
+    .service-card:hover { border-color: var(--rose); box-shadow: 0 6px 24px var(--shadow); transform: translateY(-2px); }
+    .service-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.1rem; }
+    .service-icon.hair { background: var(--rose-light); color: var(--rose); }
+    .service-icon.nail { background: var(--gold-light); color: var(--gold); }
+    .service-icon.brow { background: #EAF0FB; color: #5B7EC9; }
+    .service-icon.foot { background: #EBF5F0; color: #4CA87A; }
+    .service-info { flex: 1; }
+    .service-name { font-size: .9rem; font-weight: 600; color: var(--dark); margin-bottom: .2rem; }
+    .service-meta { display: flex; gap: 1rem; align-items: center; }
+    .service-price { font-size: .82rem; color: var(--rose); font-weight: 600; }
+    .service-time { font-size: .78rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+
+    /* ===== COMBOS ===== */
+    #combos { background: linear-gradient(160deg, var(--rose-light) 0%, var(--gold-light) 100%); }
+    .combo-notice {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--white); border: 1px solid var(--gold); border-radius: var(--radius);
+      padding: 12px 18px; margin-bottom: 2.5rem;
+      font-size: .88rem; color: var(--text); font-weight: 500;
+      max-width: 520px; margin-left: auto; margin-right: auto;
+    }
+    .combo-notice i { color: var(--gold); font-size: 1.1rem; }
+    .combos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 1.2rem; }
+    .combo-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 1.4rem 1.5rem;
+      border: 1px solid var(--border);
+      transition: all var(--transition);
+      position: relative; overflow: hidden;
+    }
+    .combo-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--rose), var(--gold)); }
+    .combo-card:hover { transform: translateY(-3px); box-shadow: 0 10px 32px var(--shadow); }
+    .combo-label { font-size: .72rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--rose); margin-bottom: .4rem; }
+    .combo-name { font-size: .95rem; font-weight: 600; color: var(--dark); margin-bottom: .8rem; line-height: 1.4; }
+    .combo-bottom { display: flex; justify-content: space-between; align-items: center; }
+    .combo-price { font-size: 1.1rem; font-weight: 700; color: var(--rose); }
+    .combo-time { font-size: .8rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+
+    /* ===== AGENDAMENTO ===== */
+    #agendamento { background: var(--white); }
+    .booking-wrapper {
+      max-width: 720px; margin: 0 auto;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 2.5rem;
+      box-shadow: 0 8px 40px var(--shadow);
+    }
+
+    /* Steps indicator */
+    .steps { display: flex; justify-content: center; gap: 0; margin-bottom: 2.5rem; position: relative; }
+    .steps::before { content: ''; position: absolute; top: 18px; left: 50%; transform: translateX(-50%); width: calc(100% - 80px); height: 2px; background: var(--border); z-index: 0; }
+    .step { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; position: relative; z-index: 1; }
+    .step-num { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .82rem; font-weight: 700; border: 2px solid var(--border); background: var(--white); color: var(--text-muted); transition: all var(--transition); }
+    .step.active .step-num { background: var(--rose); border-color: var(--rose); color: #fff; }
+    .step.done .step-num { background: var(--rose-dark); border-color: var(--rose-dark); color: #fff; }
+    .step-label { font-size: .7rem; color: var(--text-muted); font-weight: 500; text-align: center; white-space: nowrap; }
+    .step.active .step-label { color: var(--rose); }
+
+    /* Form steps */
+    .booking-step { display: none; animation: fadeSlide .4s ease; }
+    .booking-step.active { display: block; }
+    @keyframes fadeSlide { from { opacity:0; transform:translateY(12px);} to { opacity:1; transform:translateY(0);} }
+
+    .step-title { font-size: 1.2rem; color: var(--dark); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 8px; font-family: 'Poppins',sans-serif; font-weight: 600; }
+    .step-title i { color: var(--rose); }
+
+    .form-group { margin-bottom: 1.2rem; }
+    .form-group label { display: block; font-size: .85rem; font-weight: 600; color: var(--text); margin-bottom: .4rem; }
+    .form-group input, .form-group select {
+      width: 100%; padding: 12px 16px;
+      border: 1.5px solid var(--border); border-radius: var(--radius);
+      background: var(--white); font-size: .9rem; color: var(--dark);
+      font-family: 'Poppins', sans-serif;
+      transition: border-color var(--transition);
+      outline: none;
+    }
+    .form-group input:focus, .form-group select:focus { border-color: var(--rose); }
+    .form-group input[type="date"] { cursor: pointer; }
+
+    .time-slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: .6rem; margin-top: .5rem; }
+    .time-slot {
+      padding: 8px 4px; text-align: center; font-size: .84rem; font-weight: 500;
+      border: 1.5px solid var(--border); border-radius: var(--radius);
+      background: var(--white); cursor: pointer; color: var(--text);
+      transition: all var(--transition);
+    }
+    .time-slot:hover { border-color: var(--rose); color: var(--rose); }
+    .time-slot.selected { background: var(--rose); border-color: var(--rose); color: #fff; }
+    .time-slot.busy { background: #F5F0F0; color: #CCC; cursor: not-allowed; border-color: #EEE; pointer-events: none; }
+    .no-slots { text-align: center; padding: 1.5rem; color: var(--text-muted); font-size: .9rem; }
+
+    .btn-booking { width: 100%; margin-top: 1.5rem; justify-content: center; padding: 14px; font-size: .95rem; }
+    .btn-back { background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: .85rem; display: flex; align-items: center; gap: 6px; margin-bottom: 1rem; font-family: 'Poppins',sans-serif; padding: 0; }
+    .btn-back:hover { color: var(--rose); }
+
+    .booking-summary {
+      background: var(--white); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1.2rem 1.4rem; margin-top: 1.2rem;
+    }
+    .summary-row { display: flex; justify-content: space-between; padding: .4rem 0; font-size: .88rem; border-bottom: 1px solid var(--border); }
+    .summary-row:last-child { border-bottom: none; font-weight: 600; color: var(--dark); }
+    .summary-label { color: var(--text-muted); }
+
+    .booking-success {
+      text-align: center; padding: 2rem 1rem;
+    }
+    .success-icon { width: 70px; height: 70px; border-radius: 50%; background: #EAF5EE; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; }
+    .success-icon i { font-size: 2rem; color: #4CA87A; }
+    .booking-success h3 { font-size: 1.5rem; color: var(--dark); margin-bottom: .5rem; }
+    .booking-success p { color: var(--text-muted); font-size: .9rem; margin-bottom: 1.5rem; }
+    .booking-detail-box { background: var(--bg); border-radius: var(--radius); padding: 1.2rem; text-align: left; margin-bottom: 1.5rem; }
+    .booking-detail-row { display: flex; gap: 8px; font-size: .88rem; margin-bottom: .4rem; }
+    .booking-detail-row i { color: var(--rose); width: 16px; flex-shrink: 0; margin-top: 3px; }
+
+    .alert { padding: 10px 14px; border-radius: var(--radius); font-size: .84rem; margin-top: .8rem; display: none; }
+    .alert.error { background: #FEF0F0; border: 1px solid #FBCACA; color: #B33; }
+    .alert.show { display: block; }
+
+    /* ===== CONTACT ===== */
+    #contato { background: var(--bg); }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; }
+    .contact-info h3 { font-size: 1.5rem; color: var(--dark); margin-bottom: 1rem; }
+    .contact-info p { color: var(--text-muted); font-size: .9rem; margin-bottom: 1.5rem; }
+    .contact-items { display: grid; gap: 1rem; margin-bottom: 2rem; }
+    .contact-item { display: flex; gap: 12px; align-items: flex-start; }
+    .contact-item-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--rose-light); display: flex; align-items: center; justify-content: center; color: var(--rose); flex-shrink: 0; }
+    .contact-item-text h4 { font-size: .88rem; font-weight: 600; color: var(--dark); }
+    .contact-item-text p { font-size: .83rem; color: var(--text-muted); }
+    .social-links { display: flex; gap: .8rem; }
+    .social-link {
+      width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; transition: all var(--transition);
+    }
+    .social-link.instagram { background: linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); color: #fff; }
+    .social-link.whatsapp { background: #25D366; color: #fff; }
+    .social-link:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 6px 20px rgba(0,0,0,.2); }
+
+    .map-card {
+      background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden; box-shadow: 0 4px 20px var(--shadow);
+    }
+    .map-placeholder {
+      background: linear-gradient(145deg, var(--rose-light), var(--gold-light));
+      height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .6rem;
+    }
+    .map-placeholder i { font-size: 2.5rem; color: var(--rose); }
+    .map-placeholder p { font-size: .9rem; color: var(--text); font-weight: 500; }
+    .map-address { padding: 1.2rem 1.4rem; }
+    .map-address p { font-size: .88rem; color: var(--text-muted); display: flex; gap: 6px; align-items: flex-start; }
+    .map-address i { color: var(--rose); flex-shrink: 0; margin-top: 3px; }
+
+    /* ===== FLOAT WHATSAPP ===== */
+    .float-whatsapp {
+      position: fixed; bottom: 28px; right: 28px; z-index: 888;
+      width: 56px; height: 56px; border-radius: 50%;
+      background: #25D366; color: #fff; font-size: 1.6rem;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 20px rgba(37,211,102,.45);
+      transition: all var(--transition); cursor: pointer;
+    }
+    .float-whatsapp:hover { transform: scale(1.12); background: #1EBE5D; }
+    .float-whatsapp::before {
+      content: 'Fale Conosco';
+      position: absolute; right: 66px; top: 50%; transform: translateY(-50%);
+      background: var(--dark); color: #fff; font-size: .75rem; font-weight: 500;
+      padding: 5px 10px; border-radius: 6px; white-space: nowrap;
+      opacity: 0; pointer-events: none; transition: opacity var(--transition);
+    }
+    .float-whatsapp:hover::before { opacity: 1; }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: var(--dark); color: rgba(255,255,255,.7);
+      padding: 40px 24px 24px;
+    }
+    .footer-inner { max-width: 1100px; margin: 0 auto; }
+    .footer-top { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 3rem; margin-bottom: 2rem; }
+    .footer-brand .logo-text h1 { color: #fff; }
+    .footer-brand .logo-text span { color: var(--rose); }
+    .footer-brand p { font-size: .84rem; margin-top: .8rem; line-height: 1.7; }
+    .footer-col h4 { color: #fff; font-size: .9rem; font-weight: 600; margin-bottom: 1rem; font-family: 'Poppins',sans-serif; }
+    .footer-col ul { display: grid; gap: .5rem; }
+    .footer-col ul li { font-size: .83rem; }
+    .footer-col ul li a:hover { color: var(--rose); }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,.1); padding-top: 1.2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .5rem; font-size: .78rem; }
+    .footer-bottom a { color: var(--rose); }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 900px) {
+      .hero-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+      .contact-grid { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr 1fr; }
+      .about-strip .container { grid-template-columns: 1fr; gap: 1.5rem; }
+    }
+    @media (max-width: 680px) {
+      nav { display: none; position: fixed; top: 73px; left: 0; right: 0; background: var(--white); border-bottom: 1px solid var(--border); flex-direction: column; padding: 1.5rem; gap: 1rem; }
+      nav.open { display: flex; }
+      .menu-toggle { display: block; }
+      .footer-top { grid-template-columns: 1fr; gap: 2rem; }
+      .steps::before { display: none; }
+      .step-label { display: none; }
+      .booking-wrapper { padding: 1.5rem; }
+      .footer-bottom { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header>
+  <div class="header-inner">
+    <a href="#hero" class="logo">
+      <div class="logo-icon"><i class="fa-solid fa-scissors"></i></div>
+      <div class="logo-text">
+        <h1>Studio Beauty</h1>
+        <span>Salão de Beleza</span>
+      </div>
+    </a>
+    <nav id="mainNav">
+      <a href="#servicos">Serviços</a>
+      <a href="#combos">Combos</a>
+      <a href="#agendamento">Agendamento</a>
+      <a href="#contato">Contato</a>
+      <a href="https://wa.me/5531987899520" target="_blank" class="btn-nav">
+        <i class="fa-brands fa-whatsapp"></i> WhatsApp
+      </a>
+    </nav>
+    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<!-- ===== HERO ===== -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-content">
+      <div class="hero-badge"><i class="fa-solid fa-star"></i> Studio Beauty — Horizonte, MG</div>
+      <h1 class="hero-title">Beleza que <em>transforma</em> o seu dia</h1>
+      <p class="hero-desc">
+        Cabelo, unhas, sobrancelhas e muito mais num espaço pensado para você relaxar e sair renovada.
+        Atendimento com carinho e profissionalismo.
+      </p>
+      <div class="hero-actions">
+        <a href="#agendamento" class="btn btn-primary"><i class="fa-solid fa-calendar-check"></i> Agendar Horário</a>
+        <a href="https://wa.me/5531987899520" target="_blank" class="btn btn-whatsapp"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="hero-card-title"><i class="fa-solid fa-clock"></i> Horários de Funcionamento</div>
+      <div class="hours-list">
+        <div class="hours-item">
+          <span class="hours-day">Segunda a Sexta</span>
+          <span class="hours-badge">9h30 – 18h00</span>
+        </div>
+        <div class="hours-item">
+          <span class="hours-day">Sábado</span>
+          <span class="hours-badge">7h30 – 18h00</span>
+        </div>
+        <div class="hours-item">
+          <span class="hours-day">Domingo</span>
+          <span class="hours-badge closed">Fechado</span>
+        </div>
+      </div>
+      <div style="margin-top:1.4rem; padding:1rem; background:var(--rose-light); border-radius:var(--radius); text-align:center;">
+        <p style="font-size:.8rem; color:var(--rose); font-weight:600; margin-bottom:.3rem;"><i class="fa-solid fa-gift"></i> Combos Especiais</p>
+        <p style="font-size:.78rem; color:var(--text-muted);">Segunda, Terça e Quarta-feira</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ABOUT STRIP ===== -->
+<div class="about-strip">
+  <div class="container">
+    <div class="about-item">
+      <i class="fa-solid fa-award"></i>
+      <h3>Profissionais Qualificadas</h3>
+      <p>Técnicas modernas e produtos de qualidade</p>
+    </div>
+    <div class="about-item">
+      <i class="fa-solid fa-heart"></i>
+      <h3>Atendimento Personalizado</h3>
+      <p>Cada cliente é única e merece atenção especial</p>
+    </div>
+    <div class="about-item">
+      <i class="fa-solid fa-calendar-check"></i>
+      <h3>Agendamento Online</h3>
+      <p>Marque seu horário com facilidade e praticidade</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SERVIÇOS ===== -->
+<section id="servicos">
+  <div class="container">
+    <h2 class="section-title">Nossos Serviços</h2>
+    <p class="section-subtitle">Tudo que você precisa para realçar sua beleza num só lugar</p>
+    <div class="services-grid" id="servicesGrid"></div>
+  </div>
+</section>
+
+<!-- ===== COMBOS ===== -->
+<section id="combos">
+  <div class="container">
+    <h2 class="section-title">Combos Especiais</h2>
+    <p class="section-subtitle">Mais serviços, mais economia — disponível <span>segunda a quarta-feira</span></p>
+    <div class="combo-notice">
+      <i class="fa-solid fa-calendar-days"></i>
+      Os combos são exclusivos de segunda-feira a quarta-feira. Aproveite!
+    </div>
+    <div class="combos-grid" id="combosGrid"></div>
+  </div>
+</section>
+
+<!-- ===== AGENDAMENTO ===== -->
+<section id="agendamento">
+  <div class="container">
+    <h2 class="section-title">Agendamento Online</h2>
+    <p class="section-subtitle">Escolha o dia, o procedimento e o horário que preferir</p>
+
+    <div class="booking-wrapper">
+      <!-- Steps -->
+      <div class="steps" id="stepsBar">
+        <div class="step active" id="stepIndicator1">
+          <div class="step-num">1</div>
+          <div class="step-label">Data</div>
+        </div>
+        <div class="step" id="stepIndicator2">
+          <div class="step-num">2</div>
+          <div class="step-label">Serviço</div>
+        </div>
+        <div class="step" id="stepIndicator3">
+          <div class="step-num">3</div>
+          <div class="step-label">Horário</div>
+        </div>
+        <div class="step" id="stepIndicator4">
+          <div class="step-num">4</div>
+          <div class="step-label">Seus Dados</div>
+        </div>
+        <div class="step" id="stepIndicator5">
+          <div class="step-num">5</div>
+          <div class="step-label">Confirmação</div>
+        </div>
+      </div>
+
+      <!-- Step 1: Date -->
+      <div class="booking-step active" id="bookingStep1">
+        <div class="step-title"><i class="fa-solid fa-calendar"></i> Escolha a Data</div>
+        <div class="form-group">
+          <label for="inputDate">Selecione o dia:</label>
+          <input type="date" id="inputDate" />
+        </div>
+        <div class="alert error" id="alertDate"></div>
+        <button class="btn btn-primary btn-booking" id="btnStep1">
+          Próximo <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+      <!-- Step 2: Service -->
+      <div class="booking-step" id="bookingStep2">
+        <button class="btn-back" id="backTo1"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+        <div class="step-title"><i class="fa-solid fa-scissors"></i> Escolha o Serviço</div>
+        <div class="form-group">
+          <label for="inputService">Procedimento:</label>
+          <select id="inputService">
+            <option value="">— Selecione o procedimento —</option>
+          </select>
+        </div>
+        <div id="serviceInfo" style="display:none; background:var(--rose-light); border-radius:var(--radius); padding:.8rem 1rem; margin-top:.5rem; font-size:.85rem;">
+          <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:.5rem;">
+            <span id="serviceInfoPrice" style="color:var(--rose); font-weight:600;"></span>
+            <span id="serviceInfoTime" style="color:var(--text-muted);"></span>
+          </div>
+        </div>
+        <div class="alert error" id="alertService"></div>
+        <button class="btn btn-primary btn-booking" id="btnStep2">
+          Próximo <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+      <!-- Step 3: Time -->
+      <div class="booking-step" id="bookingStep3">
+        <button class="btn-back" id="backTo2"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+        <div class="step-title"><i class="fa-solid fa-clock"></i> Escolha o Horário</div>
+        <p style="font-size:.84rem; color:var(--text-muted); margin-bottom:1rem;" id="slotDateLabel"></p>
+        <div class="time-slots" id="timeSlots"></div>
+        <div class="alert error" id="alertSlot"></div>
+        <button class="btn btn-primary btn-booking" id="btnStep3" style="margin-top:1.5rem;">
+          Próximo <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+      <!-- Step 4: User info -->
+      <div class="booking-step" id="bookingStep4">
+        <button class="btn-back" id="backTo3"><i class="fa-solid fa-arrow-left"></i> Voltar</button>
+        <div class="step-title"><i class="fa-solid fa-user"></i> Seus Dados</div>
+        <div class="form-group">
+          <label for="inputName">Nome completo:</label>
+          <input type="text" id="inputName" placeholder="Seu nome" />
+        </div>
+        <div class="form-group">
+          <label for="inputPhone">WhatsApp / Telefone:</label>
+          <input type="tel" id="inputPhone" placeholder="(31) 99999-9999" />
+        </div>
+        <div class="booking-summary" id="bookingSummary"></div>
+        <div class="alert error" id="alertUser"></div>
+        <button class="btn btn-primary btn-booking" id="btnStep4">
+          <i class="fa-solid fa-check"></i> Confirmar Agendamento
+        </button>
+      </div>
+
+      <!-- Step 5: Success -->
+      <div class="booking-step" id="bookingStep5">
+        <div class="booking-success">
+          <div class="success-icon"><i class="fa-solid fa-check"></i></div>
+          <h3>Agendamento Confirmado!</h3>
+          <p>Seu horário foi reservado com sucesso. Aguardamos você!</p>
+          <div class="booking-detail-box" id="successDetails"></div>
+          <a href="https://wa.me/5531987899520" target="_blank" class="btn btn-whatsapp" style="display:inline-flex; margin-bottom:1rem;">
+            <i class="fa-brands fa-whatsapp"></i> Confirmar pelo WhatsApp
+          </a>
+          <br/>
+          <button class="btn btn-outline" id="btnNewBooking" style="display:inline-flex; margin-top:.5rem;">
+            <i class="fa-solid fa-plus"></i> Novo Agendamento
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CONTACT ===== -->
+<section id="contato">
+  <div class="container">
+    <h2 class="section-title">Fale Conosco</h2>
+    <p class="section-subtitle">Estamos aqui para atender você com todo carinho</p>
+    <div class="contact-grid">
+      <div class="contact-info">
+        <h3>Venha nos visitar</h3>
+        <p>Estamos localizados no bairro Vila Santa Luzia, em Horizonte — MG. Será um prazer receber você!</p>
+        <div class="contact-items">
+          <div class="contact-item">
+            <div class="contact-item-icon"><i class="fa-solid fa-location-dot"></i></div>
+            <div class="contact-item-text">
+              <h4>Endereço</h4>
+              <p>Rua João Gualberto Costa, 198<br>Bairro Vila Santa Luzia — Horizonte, MG</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item-icon"><i class="fa-solid fa-clock"></i></div>
+            <div class="contact-item-text">
+              <h4>Horário</h4>
+              <p>Seg–Sex: 9h30 às 18h00<br>Sábado: 7h30 às 18h00</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item-icon"><i class="fa-brands fa-whatsapp"></i></div>
+            <div class="contact-item-text">
+              <h4>WhatsApp</h4>
+              <p><a href="https://wa.me/5531987899520" target="_blank" style="color:var(--rose); font-weight:600;">(31) 98789-9520</a></p>
+            </div>
+          </div>
+        </div>
+        <div class="social-links">
+          <a href="https://www.instagram.com/moreira.irineia" target="_blank" class="social-link instagram" title="Instagram @moreira.irineia">
+            <i class="fa-brands fa-instagram"></i>
+          </a>
+          <a href="https://wa.me/5531987899520" target="_blank" class="social-link whatsapp" title="WhatsApp">
+            <i class="fa-brands fa-whatsapp"></i>
+          </a>
+        </div>
+      </div>
+      <div class="map-card">
+        <div class="map-placeholder">
+          <i class="fa-solid fa-map-location-dot"></i>
+          <p>Rua João Gualberto Costa, 198</p>
+          <p style="font-size:.8rem; color:var(--text-muted);">Vila Santa Luzia — Horizonte, MG</p>
+        </div>
+        <div class="map-address">
+          <p>
+            <i class="fa-solid fa-location-dot"></i>
+            Rua João Gualberto Costa, 198 — Bairro Vila Santa Luzia, Horizonte — MG
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="logo">
+          <div class="logo-icon"><i class="fa-solid fa-scissors"></i></div>
+          <div class="logo-text">
+            <h1>Studio Beauty</h1>
+            <span>Salão de Beleza</span>
+          </div>
+        </div>
+        <p>Localizado em Horizonte — MG. Beleza, cuidado e bem-estar num só lugar. Você merece se sentir especial!</p>
+      </div>
+      <div class="footer-col">
+        <h4>Serviços</h4>
+        <ul>
+          <li><a href="#servicos">Cabelo</a></li>
+          <li><a href="#servicos">Unhas</a></li>
+          <li><a href="#servicos">Sobrancelhas</a></li>
+          <li><a href="#servicos">Micropigmentação</a></li>
+          <li><a href="#combos">Combos Especiais</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Links Úteis</h4>
+        <ul>
+          <li><a href="#agendamento">Agendar Horário</a></li>
+          <li><a href="https://wa.me/5531987899520" target="_blank">WhatsApp</a></li>
+          <li><a href="https://www.instagram.com/moreira.irineia" target="_blank">Instagram</a></li>
+          <li><a href="#contato">Contato</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2025 Studio Beauty. Todos os direitos reservados.</span>
+      <span>Instagram: <a href="https://www.instagram.com/moreira.irineia" target="_blank">@moreira.irineia</a></span>
+      <a href="admin.html" style="opacity:.35; font-size:.7rem; color:rgba(255,255,255,.4);">&#9881; Admin</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ===== FLOAT WHATSAPP ===== -->
+<a href="https://wa.me/5531987899520" target="_blank" class="float-whatsapp" title="Fale conosco no WhatsApp">
+  <i class="fa-brands fa-whatsapp"></i>
+</a>
+
+<!-- ===== SUPABASE + JAVASCRIPT ===== -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  /* ======================================
+     DATA
+  ====================================== */
+  const SERVICES = [
+    { id:1,  name:"Mechas/Luzes",                               price:"A partir de R$ 150,00", duration:300, icon:"fa-solid fa-wand-magic-sparkles", cat:"hair" },
+    { id:2,  name:"Hidratação",                                  price:"A partir de R$ 90,00",  duration:60,  icon:"fa-solid fa-droplet",             cat:"hair" },
+    { id:3,  name:"Hidratação com Ozônio",                       price:"R$ 130,00",             duration:75,  icon:"fa-solid fa-droplet",             cat:"hair" },
+    { id:4,  name:"Escova",                                      price:"A partir de R$ 30,00",  duration:45,  icon:"fa-solid fa-wind",                cat:"hair" },
+    { id:5,  name:"Queratinização ou Cauterização com Escova",   price:"A partir de R$ 130,00", duration:90,  icon:"fa-solid fa-wind",                cat:"hair" },
+    { id:6,  name:"Progressiva (com ou sem formol)",             price:"A partir de R$ 130,00", duration:180, icon:"fa-solid fa-star",                cat:"hair" },
+    { id:7,  name:"Pé e Mão",                                    price:"R$ 50,00",              duration:60,  icon:"fa-solid fa-hand-sparkles",       cat:"nail" },
+    { id:8,  name:"Só Pé ou Mão",                               price:"R$ 30,00",              duration:30,  icon:"fa-solid fa-hand-sparkles",       cat:"nail" },
+    { id:9,  name:"Esmaltação em Gel",                           price:"R$ 85,00",              duration:75,  icon:"fa-solid fa-paintbrush",          cat:"nail" },
+    { id:10, name:"Alongamento de Unha molde F1",                price:"R$ 130,00",             duration:150, icon:"fa-solid fa-paintbrush",          cat:"nail" },
+    { id:11, name:"Manutenção",                                  price:"R$ 85,00",              duration:90,  icon:"fa-solid fa-paintbrush",          cat:"nail" },
+    { id:12, name:"Design de Sobrancelhas",                      price:"R$ 35,00",              duration:30,  icon:"fa-solid fa-eye",                 cat:"brow" },
+    { id:13, name:"Design com Henna",                            price:"R$ 55,00",              duration:60,  icon:"fa-solid fa-eye",                 cat:"brow" },
+    { id:14, name:"Micropigmentação",                            price:"R$ 300,00",             duration:180, icon:"fa-solid fa-eye",                 cat:"brow" },
+    { id:15, name:"Retoque de Micropigmentação",                 price:"A confirmar",            duration:90,  icon:"fa-solid fa-eye",                 cat:"brow" },
+    { id:16, name:"Spa dos Pés",                                 price:"R$ 85,00",              duration:75,  icon:"fa-solid fa-spa",                 cat:"foot" },
+  ];
+
+  const COMBOS = [
+    { id:101, name:"Buço + Pedicure + Manicure",                              price:"R$ 65,00",  duration:75  },
+    { id:102, name:"Design com Henna + Corte + Manicure",                     price:"R$ 99,90",  duration:135 },
+    { id:103, name:"Micropigmentação + Retoque",                               price:"R$ 250,00", duration:270 },
+    { id:104, name:"Pedicure + Buço + Design com Henna",                      price:"R$ 85,00",  duration:105 },
+    { id:105, name:"Blindagem de Gel + Cutilagem",                             price:"R$ 75,00",  duration:80  },
+    { id:106, name:"Spa dos Pés + Pedicure",                                   price:"R$ 70,00",  duration:105 },
+    { id:107, name:"Botox Capilar + Pedicure + Design",                        price:"R$ 145,00", duration:180 },
+    { id:108, name:"Cristalização Térmica + Pedicure + Buço",                  price:"R$ 85,00",  duration:135 },
+    { id:109, name:"Hidratação + Escova + Pedicure",                           price:"R$ 85,00",  duration:135 },
+    { id:110, name:"Progressiva sem Formol + Hidratação + Brinde Pedicure",    price:"R$ 200,00", duration:270 },
+  ];
+
+  /* Operating hours: key = JS day (0=Sun, 1=Mon, ..., 6=Sat) */
+  const OPENING = {
+    1: { open: '09:30', close: '18:00' },
+    2: { open: '09:30', close: '18:00' },
+    3: { open: '09:30', close: '18:00' },
+    4: { open: '09:30', close: '18:00' },
+    5: { open: '09:30', close: '18:00' },
+    6: { open: '07:30', close: '18:00' },
+    0: null
+  };
+
+  const BREAK     = 10;  // minutos de intervalo entre atendimentos
+  const SLOT_STEP = 15;  // granularidade dos horários (min)
+
+  /* ======================================
+     SUPABASE — preencha com seus dados
+     supabase.com → seu projeto → Settings → API
+  ====================================== */
+  const SUPABASE_URL  = 'COLE_AQUI_A_URL_DO_PROJETO';
+  const SUPABASE_ANON = 'COLE_AQUI_A_CHAVE_ANON_PUBLIC';
+  const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  /* ======================================
+     UTILS
+  ====================================== */
+  function toMinutes(timeStr) {
+    const [h, m] = timeStr.split(':').map(Number);
+    return h * 60 + m;
+  }
+
+  function toTimeStr(minutes) {
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+  }
+
+  function formatDuration(min) {
+    const h = Math.floor(min / 60);
+    const m = min % 60;
+    if (h === 0) return `${m}min`;
+    if (m === 0) return `${h}h`;
+    return `${h}h${String(m).padStart(2,'0')}min`;
+  }
+
+  function getDayOfWeek(dateStr) {
+    // dateStr is YYYY-MM-DD, parse as local date
+    const [y, mo, d] = dateStr.split('-').map(Number);
+    return new Date(y, mo - 1, d).getDay();
+  }
+
+  function formatDateBR(dateStr) {
+    const [y, mo, d] = dateStr.split('-');
+    const days = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+    const dow = getDayOfWeek(dateStr);
+    return `${days[dow]}, ${d}/${mo}/${y}`;
+  }
+
+  /* ======================================
+     GENERATE TIME SLOTS (async — busca no Supabase)
+  ====================================== */
+  async function getAvailableSlots(dateStr, serviceDuration) {
+    const dow   = getDayOfWeek(dateStr);
+    const hours = OPENING[dow];
+    if (!hours) return [];
+
+    const openMin  = toMinutes(hours.open);
+    const closeMin = toMinutes(hours.close);
+
+    // Busca agendamentos existentes para a data no Supabase
+    const { data: bookings } = await db
+      .from('agendamentos')
+      .select('time, duration')
+      .eq('date', dateStr)
+      .eq('cancelled', false);
+
+    const existing = bookings || [];
+    const slots    = [];
+    let slotStart  = openMin;
+
+    while (slotStart + serviceDuration <= closeMin) {
+      const overlap = existing.some(b => {
+        const bStart = toMinutes((b.time || '').substring(0, 5));
+        const bEnd   = bStart + b.duration + BREAK;
+        return slotStart < bEnd && (slotStart + serviceDuration + BREAK) > bStart;
+      });
+      slots.push({ time: toTimeStr(slotStart), busy: overlap });
+      slotStart += SLOT_STEP;
+    }
+
+    return slots;
+  }
+
+  /* ======================================
+     RENDER SERVICES SECTION
+  ====================================== */
+  const iconMap = { hair:'hair', nail:'nail', brow:'brow', foot:'foot' };
+
+  function renderServices() {
+    const grid = document.getElementById('servicesGrid');
+    grid.innerHTML = SERVICES.map(s => `
+      <div class="service-card">
+        <div class="service-icon ${s.cat}"><i class="${s.icon}"></i></div>
+        <div class="service-info">
+          <div class="service-name">${s.name}</div>
+          <div class="service-meta">
+            <span class="service-price">${s.price}</span>
+            <span class="service-time"><i class="fa-regular fa-clock"></i> ${formatDuration(s.duration)}</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function renderCombos() {
+    const grid = document.getElementById('combosGrid');
+    grid.innerHTML = COMBOS.map((c, i) => `
+      <div class="combo-card">
+        <div class="combo-label">Combo ${i + 1}</div>
+        <div class="combo-name">${c.name}</div>
+        <div class="combo-bottom">
+          <span class="combo-price">${c.price}</span>
+          <span class="combo-time"><i class="fa-regular fa-clock"></i> ${formatDuration(c.duration)}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  /* ======================================
+     BOOKING STATE
+  ====================================== */
+  const state = {
+    date: null,
+    service: null,
+    time: null,
+    name: '',
+    phone: ''
+  };
+
+  function goToStep(n) {
+    document.querySelectorAll('.booking-step').forEach((el, i) => {
+      el.classList.toggle('active', i + 1 === n);
+    });
+    document.querySelectorAll('.step').forEach((el, i) => {
+      el.classList.remove('active', 'done');
+      if (i + 1 < n) el.classList.add('done');
+      if (i + 1 === n) el.classList.add('active');
+    });
+  }
+
+  /* ======================================
+     STEP 1 — Date
+  ====================================== */
+  const inputDate = document.getElementById('inputDate');
+  // Set min date to today
+  const today = new Date();
+  inputDate.min = today.toISOString().split('T')[0];
+
+  document.getElementById('btnStep1').addEventListener('click', () => {
+    const alertEl = document.getElementById('alertDate');
+    const val = inputDate.value;
+    if (!val) { showAlert(alertEl, 'Por favor, selecione uma data.'); return; }
+
+    const dow = getDayOfWeek(val);
+    if (dow === 0) { showAlert(alertEl, 'Domingo não temos atendimento. Escolha outra data.'); return; }
+
+    // Validate not in the past
+    const [y, mo, d] = val.split('-').map(Number);
+    const chosen = new Date(y, mo - 1, d);
+    const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    if (chosen < todayDate) { showAlert(alertEl, 'Não é possível agendar para datas passadas.'); return; }
+
+    alertEl.classList.remove('show');
+    state.date = val;
+    populateServices(dow);
+    goToStep(2);
+  });
+
+  /* ======================================
+     STEP 2 — Service
+  ====================================== */
+  function populateServices(dow) {
+    const sel = document.getElementById('inputService');
+    sel.innerHTML = '<option value="">— Selecione o procedimento —</option>';
+
+    // Regular services
+    const optGroup1 = document.createElement('optgroup');
+    optGroup1.label = 'Serviços';
+    SERVICES.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = JSON.stringify({ id: s.id, name: s.name, price: s.price, duration: s.duration, isCombo: false });
+      opt.textContent = `${s.name} — ${formatDuration(s.duration)}`;
+      optGroup1.appendChild(opt);
+    });
+    sel.appendChild(optGroup1);
+
+    // Combos: only Mon (1), Tue (2), Wed (3)
+    if (dow >= 1 && dow <= 3) {
+      const optGroup2 = document.createElement('optgroup');
+      optGroup2.label = 'Combos Especiais (Seg–Qua)';
+      COMBOS.forEach((c, i) => {
+        const opt = document.createElement('option');
+        opt.value = JSON.stringify({ id: c.id, name: `Combo ${i+1} — ${c.name}`, price: c.price, duration: c.duration, isCombo: true });
+        opt.textContent = `Combo ${i+1} — ${c.name} — ${formatDuration(c.duration)}`;
+        optGroup2.appendChild(opt);
+      });
+      sel.appendChild(optGroup2);
+    }
+  }
+
+  document.getElementById('inputService').addEventListener('change', function() {
+    const infoBox = document.getElementById('serviceInfo');
+    if (!this.value) { infoBox.style.display = 'none'; return; }
+    const svc = JSON.parse(this.value);
+    document.getElementById('serviceInfoPrice').textContent = svc.price;
+    document.getElementById('serviceInfoTime').textContent = `Duração: ${formatDuration(svc.duration)}`;
+    infoBox.style.display = 'block';
+  });
+
+  document.getElementById('btnStep2').addEventListener('click', async () => {
+    const alertEl = document.getElementById('alertService');
+    const val = document.getElementById('inputService').value;
+    if (!val) { showAlert(alertEl, 'Por favor, selecione um procedimento.'); return; }
+    alertEl.classList.remove('show');
+    state.service = JSON.parse(val);
+    state.time = null;
+    goToStep(3);
+    await renderTimeSlots();
+  });
+
+  document.getElementById('backTo1').addEventListener('click', () => goToStep(1));
+
+  /* ======================================
+     STEP 3 — Time
+  ====================================== */
+  async function renderTimeSlots() {
+    const container = document.getElementById('timeSlots');
+    const label     = document.getElementById('slotDateLabel');
+    label.textContent = `Horários disponíveis para ${formatDateBR(state.date)} — ${state.service.name}`;
+
+    container.innerHTML = '<div class="no-slots"><i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem;color:var(--rose);"></i><br>Verificando disponibilidade...</div>';
+
+    const slots = await getAvailableSlots(state.date, state.service.duration);
+
+    if (slots.length === 0) {
+      container.innerHTML = '<div class="no-slots"><i class="fa-solid fa-calendar-xmark" style="font-size:2rem;color:var(--border);margin-bottom:.5rem;"></i><br>Nenhum horário disponível para esta data e serviço.</div>';
+      return;
+    }
+
+    container.innerHTML = slots.map(s => `
+      <button class="time-slot ${s.busy ? 'busy' : ''}" data-time="${s.time}" ${s.busy ? 'disabled' : ''}>
+        ${s.time}
+      </button>
+    `).join('');
+
+    container.querySelectorAll('.time-slot:not(.busy)').forEach(btn => {
+      btn.addEventListener('click', function() {
+        container.querySelectorAll('.time-slot').forEach(b => b.classList.remove('selected'));
+        this.classList.add('selected');
+        state.time = this.dataset.time;
+      });
+    });
+  }
+
+  document.getElementById('btnStep3').addEventListener('click', () => {
+    const alertEl = document.getElementById('alertSlot');
+    if (!state.time) { showAlert(alertEl, 'Por favor, selecione um horário.'); return; }
+    alertEl.classList.remove('show');
+    renderSummary();
+    goToStep(4);
+  });
+
+  document.getElementById('backTo2').addEventListener('click', () => goToStep(2));
+
+  /* ======================================
+     STEP 4 — User info
+  ====================================== */
+  function renderSummary() {
+    const box = document.getElementById('bookingSummary');
+    box.innerHTML = `
+      <div class="summary-row"><span class="summary-label">Data</span><span>${formatDateBR(state.date)}</span></div>
+      <div class="summary-row"><span class="summary-label">Serviço</span><span>${state.service.name}</span></div>
+      <div class="summary-row"><span class="summary-label">Duração</span><span>${formatDuration(state.service.duration)}</span></div>
+      <div class="summary-row"><span class="summary-label">Horário</span><span>${state.time}</span></div>
+      <div class="summary-row"><span class="summary-label">Valor</span><span>${state.service.price}</span></div>
+    `;
+  }
+
+  document.getElementById('btnStep4').addEventListener('click', async () => {
+    const alertEl = document.getElementById('alertUser');
+    const name    = document.getElementById('inputName').value.trim();
+    const phone   = document.getElementById('inputPhone').value.trim();
+    if (!name)  { showAlert(alertEl, 'Por favor, informe seu nome.'); return; }
+    if (!phone) { showAlert(alertEl, 'Por favor, informe seu WhatsApp/telefone.'); return; }
+
+    alertEl.classList.remove('show');
+    state.name  = name;
+    state.phone = phone;
+
+    const btn = document.getElementById('btnStep4');
+    btn.disabled    = true;
+    btn.innerHTML   = '<i class="fa-solid fa-spinner fa-spin"></i> Salvando...';
+
+    const { error } = await db.from('agendamentos').insert([{
+      name:     state.name,
+      phone:    state.phone,
+      date:     state.date,
+      time:     state.time,
+      duration: state.service.duration,
+      service:  state.service.name,
+      price:    state.service.price
+    }]);
+
+    btn.disabled  = false;
+    btn.innerHTML = '<i class="fa-solid fa-check"></i> Confirmar Agendamento';
+
+    if (error) {
+      showAlert(alertEl, 'Erro ao salvar o agendamento. Verifique a conexão e tente novamente.');
+      console.error(error);
+      return;
+    }
+
+    renderSuccess();
+    goToStep(5);
+  });
+
+  document.getElementById('backTo3').addEventListener('click', () => goToStep(3));
+
+  /* ======================================
+     STEP 5 — Success
+  ====================================== */
+  function renderSuccess() {
+    const box = document.getElementById('successDetails');
+    box.innerHTML = `
+      <div class="booking-detail-row"><i class="fa-solid fa-user"></i><span>${state.name}</span></div>
+      <div class="booking-detail-row"><i class="fa-solid fa-phone"></i><span>${state.phone}</span></div>
+      <div class="booking-detail-row"><i class="fa-solid fa-calendar"></i><span>${formatDateBR(state.date)}</span></div>
+      <div class="booking-detail-row"><i class="fa-solid fa-scissors"></i><span>${state.service.name}</span></div>
+      <div class="booking-detail-row"><i class="fa-solid fa-clock"></i><span>${state.time} (${formatDuration(state.service.duration)})</span></div>
+      <div class="booking-detail-row"><i class="fa-solid fa-tag"></i><span>${state.service.price}</span></div>
+    `;
+  }
+
+  document.getElementById('btnNewBooking').addEventListener('click', () => {
+    state.date = null; state.service = null; state.time = null;
+    state.name = ''; state.phone = '';
+    document.getElementById('inputDate').value = '';
+    document.getElementById('inputName').value = '';
+    document.getElementById('inputPhone').value = '';
+    document.getElementById('timeSlots').innerHTML = '';
+    goToStep(1);
+  });
+
+  /* ======================================
+     HELPERS
+  ====================================== */
+  function showAlert(el, msg) {
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 4000);
+  }
+
+  /* ======================================
+     MOBILE MENU
+  ====================================== */
+  document.getElementById('menuToggle').addEventListener('click', function() {
+    document.getElementById('mainNav').classList.toggle('open');
+  });
+
+  document.querySelectorAll('#mainNav a').forEach(a => {
+    a.addEventListener('click', () => document.getElementById('mainNav').classList.remove('open'));
+  });
+
+  /* ======================================
+     INIT
+  ====================================== */
+  renderServices();
+  renderCombos();
+</script>
+</body>
+</html>

@@ -1563,10 +1563,18 @@
     const btn = document.getElementById('btnSavePhone');
     btn.disabled = true; btn.textContent = 'Salvando...';
 
-    await db.from('profiles').update({ phone }).eq('id', currentUser.id);
-    if (currentUser.profile) currentUser.profile.phone = phone;
+    const { error } = await db.from('profiles').update({ phone }).eq('id', currentUser.id);
 
     btn.disabled = false; btn.textContent = 'Salvar e continuar';
+
+    if (error) {
+      errEl.textContent = 'Erro ao salvar. Tente novamente.';
+      errEl.classList.add('show');
+      console.error('Phone save error:', error);
+      return;
+    }
+
+    if (currentUser.profile) currentUser.profile.phone = phone;
     closePhoneModal();
     if (pendingBookingAuth) {
       pendingBookingAuth = false;

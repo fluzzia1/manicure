@@ -549,7 +549,20 @@
           <input class="auth-input" type="password" id="loginPass" placeholder="Sua senha" autocomplete="current-password"/>
         </div>
         <button class="btn-auth-submit" id="btnLogin">Entrar</button>
+        <p class="auth-switch" style="margin-bottom:.4rem;"><a onclick="switchAuthTab('forgot')" style="font-size:.78rem;color:var(--text-muted);font-weight:400;">Esqueci minha senha</a></p>
         <p class="auth-switch">Não tem conta? <a onclick="switchAuthTab('register')">Criar conta grátis</a></p>
+      </div>
+      <!-- FORGOT PASSWORD -->
+      <div class="auth-form" id="formForgot">
+        <div class="auth-error" id="forgotError"></div>
+        <div class="auth-success" id="forgotSuccess"></div>
+        <p style="font-size:.83rem;color:var(--text-muted);margin-bottom:1rem;">Informe seu e-mail e enviaremos um link para você redefinir sua senha.</p>
+        <div class="auth-field">
+          <label>E-mail</label>
+          <input class="auth-input" type="email" id="forgotEmail" placeholder="seu@email.com" autocomplete="email"/>
+        </div>
+        <button class="btn-auth-submit" id="btnForgot">Enviar link de recuperação</button>
+        <p class="auth-switch"><a onclick="switchAuthTab('login')"><i class="fa-solid fa-arrow-left" style="font-size:.75rem;"></i> Voltar ao login</a></p>
       </div>
       <!-- REGISTER -->
       <div class="auth-form" id="formRegister">
@@ -574,6 +587,28 @@
         <button class="btn-auth-submit" id="btnRegister">Criar Conta</button>
         <p class="auth-switch">Já tem conta? <a onclick="switchAuthTab('login')">Entrar</a></p>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== NEW PASSWORD MODAL ===== -->
+<div class="auth-overlay" id="newPassOverlay">
+  <div class="auth-modal">
+    <div class="auth-header">
+      <h3>Redefinir Senha</h3>
+    </div>
+    <div class="auth-body">
+      <div class="auth-error" id="newPassError"></div>
+      <div class="auth-success" id="newPassSuccess"></div>
+      <div class="auth-field">
+        <label>Nova senha</label>
+        <input class="auth-input" type="password" id="newPassInput" placeholder="Mínimo 6 caracteres" autocomplete="new-password"/>
+      </div>
+      <div class="auth-field">
+        <label>Confirmar nova senha</label>
+        <input class="auth-input" type="password" id="newPassConfirm" placeholder="Repita a senha" autocomplete="new-password"/>
+      </div>
+      <button class="btn-auth-submit" id="btnNewPass">Salvar nova senha</button>
     </div>
   </div>
 </div>
@@ -1353,6 +1388,10 @@
   }
 
   db.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'PASSWORD_RECOVERY') {
+      document.getElementById('newPassOverlay').classList.add('open');
+      return;
+    }
     if (session?.user) {
       currentUser = session.user;
       const { data: profile } = await db.from('profiles').select('*').eq('id', session.user.id).single();
@@ -1384,10 +1423,17 @@
   }
 
   function switchAuthTab(tab) {
-    document.getElementById('formLogin').classList.toggle('active', tab === 'login');
-    document.getElementById('formRegister').classList.toggle('active', tab === 'register');
+    ['login','register','forgot'].forEach(t => {
+      document.getElementById('formLogin').classList.toggle('active', tab === 'login');
+      document.getElementById('formRegister').classList.toggle('active', tab === 'register');
+      document.getElementById('formForgot').classList.toggle('active', tab === 'forgot');
+    });
     document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
     document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+    // hide tabs when on forgot screen
+    document.querySelector('.auth-tabs').style.display = tab === 'forgot' ? 'none' : '';
+    document.getElementById('authModalTitle').textContent =
+      tab === 'forgot' ? 'Recuperar senha' : 'Acesse sua conta';
   }
 
   document.getElementById('authClose').addEventListener('click', closeAuthModal);
@@ -1449,6 +1495,65 @@
     okEl.textContent = 'Conta criada com sucesso! Verifique seu e-mail para confirmar.';
     okEl.classList.add('show');
     ['regName','regEmail','regPhone','regPass'].forEach(id => document.getElementById(id).value = '');
+  });
+
+  /* FORGOT PASSWORD */
+  document.getElementById('btnForgot').addEventListener('click', async () => {
+    const email = document.getElementById('forgotEmail').value.trim();
+    const errEl = document.getElementById('forgotError');
+    const okEl  = document.getElementById('forgotSuccess');
+    errEl.classList.remove('show'); okEl.classList.remove('show');
+
+    if (!email) { errEl.textContent = 'Informe seu e-mail.'; errEl.classList.add('show'); return; }
+
+    const btn = document.getElementById('btnForgot');
+    btn.disabled = true; btn.textContent = 'Enviando...';
+
+    const { error } = await db.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + window.location.pathname
+    });
+
+    btn.disabled = false; btn.textContent = 'Enviar link de recuperação';
+
+    if (error) {
+      errEl.textContent = 'Erro ao enviar. Verifique o e-mail e tente novamente.';
+      errEl.classList.add('show');
+    } else {
+      okEl.textContent = 'Link enviado! Verifique sua caixa de entrada.';
+      okEl.classList.add('show');
+      document.getElementById('forgotEmail').value = '';
+    }
+  });
+
+  /* NEW PASSWORD (after clicking reset link) */
+  document.getElementById('btnNewPass').addEventListener('click', async () => {
+    const pass    = document.getElementById('newPassInput').value;
+    const confirm = document.getElementById('newPassConfirm').value;
+    const errEl   = document.getElementById('newPassError');
+    const okEl    = document.getElementById('newPassSuccess');
+    errEl.classList.remove('show'); okEl.classList.remove('show');
+
+    if (pass.length < 6) { errEl.textContent = 'A senha deve ter pelo menos 6 caracteres.'; errEl.classList.add('show'); return; }
+    if (pass !== confirm) { errEl.textContent = 'As senhas não conferem.'; errEl.classList.add('show'); return; }
+
+    const btn = document.getElementById('btnNewPass');
+    btn.disabled = true; btn.textContent = 'Salvando...';
+
+    const { error } = await db.auth.updateUser({ password: pass });
+    btn.disabled = false; btn.textContent = 'Salvar nova senha';
+
+    if (error) {
+      errEl.textContent = 'Erro ao salvar. Tente novamente.';
+      errEl.classList.add('show');
+    } else {
+      okEl.textContent = 'Senha redefinida com sucesso!';
+      okEl.classList.add('show');
+      document.getElementById('newPassInput').value = '';
+      document.getElementById('newPassConfirm').value = '';
+      setTimeout(() => {
+        document.getElementById('newPassOverlay').classList.remove('open');
+      }, 2000);
+    }
   });
 
   /* LOGOUT */

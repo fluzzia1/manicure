@@ -299,6 +299,44 @@
     .alert-msg.success{background:var(--green-bg);color:var(--green);display:block;}
     .alert-msg.error{background:var(--red-bg);color:var(--red);display:block;}
 
+    /* ===== FATURAMENTO ===== */
+    .fat-period-bar{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:1.4rem;}
+    .fat-period-bar label{font-size:.8rem;font-weight:600;color:var(--text);margin-right:.2rem;}
+    .btn-period{
+      background:var(--bg);border:1.5px solid var(--border);border-radius:8px;
+      padding:6px 13px;font-size:.78rem;font-weight:600;color:var(--muted);
+      font-family:'Poppins',sans-serif;cursor:pointer;transition:all .15s;
+    }
+    .btn-period:hover{border-color:var(--rose);color:var(--rose);}
+    .btn-period.active{background:var(--rose);border-color:var(--rose);color:#fff;}
+    .fat-custom-dates{display:flex;gap:.5rem;align-items:center;margin-left:.2rem;}
+    .fat-custom-dates span{font-size:.78rem;color:var(--muted);}
+    .fat-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;}
+    @media(max-width:900px){.fat-stats{grid-template-columns:repeat(2,1fr);}}
+    @media(max-width:420px){.fat-stats{grid-template-columns:1fr;}}
+    .fat-card{
+      background:var(--white);border:1px solid var(--border);border-radius:var(--radius);
+      padding:1.2rem 1.3rem;box-shadow:var(--shadow);
+    }
+    .fat-card-label{font-size:.76rem;color:var(--muted);font-weight:500;margin-bottom:.5rem;}
+    .fat-card-value{font-size:1.7rem;font-weight:700;color:var(--dark);line-height:1;}
+    .fat-card-sub{font-size:.72rem;color:var(--muted);margin-top:.3rem;}
+    .fat-card-value.green{color:var(--green);}
+    .fat-breakdown{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);}
+    .fat-breakdown-header{padding:1rem 1.3rem;border-bottom:1px solid var(--border);font-size:.88rem;font-weight:600;color:var(--dark);display:flex;align-items:center;gap:6px;}
+    .fat-breakdown-header i{color:var(--rose);}
+    .fat-breakdown-row{
+      display:flex;align-items:center;padding:.75rem 1.3rem;border-bottom:1px solid var(--border);gap:1rem;
+    }
+    .fat-breakdown-row:last-child{border-bottom:none;}
+    .fat-svc-name{flex:1;font-size:.84rem;font-weight:500;color:var(--dark);}
+    .fat-svc-count{font-size:.78rem;color:var(--muted);min-width:60px;text-align:right;}
+    .fat-svc-total{font-size:.86rem;font-weight:700;color:var(--green);min-width:100px;text-align:right;}
+    .fat-bar-wrap{flex:1;height:6px;background:var(--border);border-radius:4px;min-width:60px;}
+    .fat-bar-fill{height:6px;background:var(--rose);border-radius:4px;transition:width .4s;}
+    .fat-empty{text-align:center;color:var(--muted);padding:2rem;font-size:.88rem;}
+    .fat-note{font-size:.72rem;color:var(--muted);margin-top:1rem;padding:0 .2rem;}
+
     /* ===== EXPORT ===== */
     .btn-export{
       background:var(--green-bg);color:var(--green);border:none;border-radius:8px;
@@ -365,6 +403,7 @@
       <div class="nav-item active" data-view="dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard</div>
       <div class="nav-item" data-view="agenda"><i class="fa-solid fa-calendar-days"></i> Agendamentos</div>
       <div class="nav-item" data-view="clientes"><i class="fa-solid fa-users"></i> Clientes</div>
+      <div class="nav-item" data-view="faturamento"><i class="fa-solid fa-dollar-sign"></i> Faturamento</div>
       <div class="nav-label" style="margin-top:.6rem;">Sistema</div>
       <div class="nav-item" data-view="configuracoes"><i class="fa-solid fa-gear"></i> Configurações</div>
       <a class="nav-item" href="index.html" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Site</a>
@@ -481,6 +520,30 @@
             <div class="client-grid" id="clientGrid"></div>
           </div>
         </div>
+      </div>
+
+      <!-- ===== FATURAMENTO ===== -->
+      <div class="view" id="viewFaturamento">
+        <!-- Filtro de período -->
+        <div class="fat-period-bar">
+          <label>Período:</label>
+          <button class="btn-period" data-period="today">Hoje</button>
+          <button class="btn-period" data-period="week">Esta Semana</button>
+          <button class="btn-period active" data-period="month">Este Mês</button>
+          <button class="btn-period" data-period="lastmonth">Mês Anterior</button>
+          <button class="btn-period" data-period="year">Este Ano</button>
+          <div class="fat-custom-dates">
+            <input type="date" class="filter-input" id="fatDateFrom" style="width:140px;"/>
+            <span>até</span>
+            <input type="date" class="filter-input" id="fatDateTo" style="width:140px;"/>
+            <button class="btn-period" data-period="custom">Filtrar</button>
+          </div>
+        </div>
+        <!-- Cards de resumo -->
+        <div class="fat-stats" id="fatStats"></div>
+        <!-- Detalhamento por serviço -->
+        <div class="fat-breakdown" id="fatBreakdown"></div>
+        <p class="fat-note">* Serviços com valor "A partir de" usam o valor mínimo. Serviços "A confirmar" não são somados.</p>
       </div>
 
       <!-- ===== CONFIGURAÇÕES ===== -->
@@ -1063,12 +1126,123 @@ document.getElementById('btnClearAll').addEventListener('click', async ()=>{
 });
 
 /* ============================================================
+   FATURAMENTO
+============================================================ */
+function parsePrice(str) {
+  if (!str) return null;
+  if (/confirmar/i.test(str)) return null;
+  const clean = str.replace(/a partir de/i,'').replace(/R\$\s*/,'').replace(/\./g,'').replace(',','.').trim();
+  const val = parseFloat(clean);
+  return isNaN(val) ? null : val;
+}
+
+function fmtBRL(val) {
+  return val.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+}
+
+function getPeriodRange(period) {
+  const now = new Date();
+  const yy = now.getFullYear(), mm = now.getMonth(), dd = now.getDate();
+  const pad = n => String(n).padStart(2,'0');
+  const fmt = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  if (period === 'today') { const s = fmt(now); return { from: s, to: s }; }
+  if (period === 'week') {
+    const day = now.getDay();
+    const mon = new Date(now); mon.setDate(dd - (day === 0 ? 6 : day - 1));
+    const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
+    return { from: fmt(mon), to: fmt(sun) };
+  }
+  if (period === 'month') {
+    return { from: `${yy}-${pad(mm+1)}-01`, to: `${yy}-${pad(mm+1)}-${pad(new Date(yy,mm+1,0).getDate())}` };
+  }
+  if (period === 'lastmonth') {
+    const lm = mm === 0 ? 11 : mm - 1;
+    const ly = mm === 0 ? yy - 1 : yy;
+    return { from: `${ly}-${pad(lm+1)}-01`, to: `${ly}-${pad(lm+1)}-${pad(new Date(ly,lm+1,0).getDate())}` };
+  }
+  if (period === 'year') { return { from: `${yy}-01-01`, to: `${yy}-12-31` }; }
+  const from = document.getElementById('fatDateFrom').value;
+  const to   = document.getElementById('fatDateTo').value;
+  const pad2 = n => String(n).padStart(2,'0');
+  return { from: from || `${yy}-${pad2(mm+1)}-01`, to: to || fmt(now) };
+}
+
+let fatActivePeriod = 'month';
+
+async function renderFaturamento() {
+  const allBookings = await loadBookings();
+  const range = getPeriodRange(fatActivePeriod);
+  const bookings = allBookings.filter(b => !b.cancelled && b.date >= range.from && b.date <= range.to);
+
+  let totalRevenue = 0, counted = 0;
+  const byService = {};
+
+  bookings.forEach(b => {
+    const val = parsePrice(b.price);
+    const svc = b.service || 'Outros';
+    if (!byService[svc]) byService[svc] = { count: 0, total: 0, hasConfirm: false };
+    byService[svc].count++;
+    if (val !== null) { totalRevenue += val; byService[svc].total += val; counted++; }
+    else { byService[svc].hasConfirm = true; }
+  });
+
+  const ticket = counted > 0 ? totalRevenue / counted : 0;
+  const topSvc = Object.entries(byService).sort((a,b) => b[1].count - a[1].count)[0]?.[0] || '—';
+  const periodLabels = { today:'Hoje', week:'Esta Semana', month:'Este Mês', lastmonth:'Mês Anterior', year:'Este Ano', custom:'Período Personalizado' };
+
+  document.getElementById('fatStats').innerHTML = `
+    <div class="fat-card">
+      <div class="fat-card-label"><i class="fa-solid fa-sack-dollar" style="color:var(--green);margin-right:4px;"></i> Total Faturado</div>
+      <div class="fat-card-value green">${fmtBRL(totalRevenue)}</div>
+      <div class="fat-card-sub">${periodLabels[fatActivePeriod]||'Período'} · ${counted} serviço${counted!==1?'s':''} contabilizados</div>
+    </div>
+    <div class="fat-card">
+      <div class="fat-card-label"><i class="fa-solid fa-calendar-check" style="color:var(--rose);margin-right:4px;"></i> Atendimentos</div>
+      <div class="fat-card-value">${bookings.length}</div>
+      <div class="fat-card-sub">realizados no período</div>
+    </div>
+    <div class="fat-card">
+      <div class="fat-card-label"><i class="fa-solid fa-receipt" style="color:var(--blue);margin-right:4px;"></i> Ticket Médio</div>
+      <div class="fat-card-value">${fmtBRL(ticket)}</div>
+      <div class="fat-card-sub">por atendimento (com valor)</div>
+    </div>
+    <div class="fat-card">
+      <div class="fat-card-label"><i class="fa-solid fa-star" style="color:var(--gold);margin-right:4px;"></i> Mais Realizado</div>
+      <div class="fat-card-value" style="font-size:.95rem;margin-top:.3rem;line-height:1.4;">${topSvc}</div>
+      <div class="fat-card-sub">${byService[topSvc]?.count||0} vez${(byService[topSvc]?.count||0)!==1?'es':''} no período</div>
+    </div>
+  `;
+
+  const sortedSvcs = Object.entries(byService).sort((a,b) => b[1].total - a[1].total);
+  const maxTotal = sortedSvcs.reduce((m,[,d]) => Math.max(m, d.total), 1);
+  const breakdown = document.getElementById('fatBreakdown');
+
+  if (!sortedSvcs.length) {
+    breakdown.innerHTML = `<div class="fat-breakdown-header"><i class="fa-solid fa-list"></i> Detalhamento por Serviço</div><div class="fat-empty">Nenhum atendimento no período selecionado.</div>`;
+    return;
+  }
+
+  breakdown.innerHTML = `
+    <div class="fat-breakdown-header"><i class="fa-solid fa-list"></i> Detalhamento por Serviço</div>
+    ${sortedSvcs.map(([svc,d]) => `
+      <div class="fat-breakdown-row">
+        <span class="fat-svc-name">${svc}${d.hasConfirm?' <span style="font-size:.7rem;color:var(--muted);">(parcial)</span>':''}</span>
+        <div class="fat-bar-wrap"><div class="fat-bar-fill" style="width:${Math.round((d.total/maxTotal)*100)}%"></div></div>
+        <span class="fat-svc-count">${d.count}×</span>
+        <span class="fat-svc-total">${d.total>0?fmtBRL(d.total):'—'}</span>
+      </div>
+    `).join('')}
+  `;
+}
+
+/* ============================================================
    NAVIGATION
 ============================================================ */
 const viewMap = {
   dashboard:    { el:'viewDashboard',    title:'Dashboard' },
   agenda:       { el:'viewAgenda',       title:'Agendamentos' },
   clientes:     { el:'viewClientes',     title:'Clientes' },
+  faturamento:  { el:'viewFaturamento',  title:'Faturamento' },
   configuracoes:{ el:'viewConfiguracoes',title:'Configurações' },
 };
 
@@ -1078,12 +1252,22 @@ function switchView(key) {
     document.querySelector(`[data-view="${k}"]`)?.classList.toggle('active', k===key);
   });
   document.getElementById('topbarTitle').textContent = viewMap[key]?.title||'';
-  if (key==='agenda')    { renderBookingsTable(); }
-  if (key==='clientes')  { renderClients(); }
+  if (key==='agenda')       { renderBookingsTable(); }
+  if (key==='clientes')     { renderClients(); }
+  if (key==='faturamento')  { renderFaturamento(); }
 }
 
 document.querySelectorAll('[data-view]').forEach(el=>{
   el.addEventListener('click', ()=>{ switchView(el.dataset.view); closeSidebar(); });
+});
+
+// Botões de período do faturamento
+document.querySelectorAll('.btn-period[data-period]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    fatActivePeriod = btn.dataset.period;
+    document.querySelectorAll('.btn-period[data-period]').forEach(b => b.classList.toggle('active', b === btn));
+    renderFaturamento();
+  });
 });
 
 document.getElementById('btnLogout').addEventListener('click', doLogout);

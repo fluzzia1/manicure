@@ -327,20 +327,98 @@
 
     /* ===== RESPONSIVE ===== */
     @media (max-width: 900px) {
-      .hero-inner { grid-template-columns: 1fr; gap: 2.5rem; }
-      .contact-grid { grid-template-columns: 1fr; }
-      .footer-top { grid-template-columns: 1fr 1fr; }
+      .hero-inner { grid-template-columns: 1fr; gap: 2rem; }
+      .contact-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .footer-top { grid-template-columns: 1fr 1fr; gap: 2rem; }
       .about-strip .container { grid-template-columns: 1fr; gap: 1.5rem; }
+      .stats-grid { grid-template-columns: repeat(2,1fr); }
     }
+
     @media (max-width: 680px) {
-      nav { display: none; position: fixed; top: 73px; left: 0; right: 0; background: var(--white); border-bottom: 1px solid var(--border); flex-direction: column; padding: 1.5rem; gap: 1rem; }
+      /* Sections */
+      section { padding: 52px 16px; }
+      .container { padding: 0; }
+
+      /* Header */
+      .header-inner { padding: 0; }
+      nav {
+        display: none; position: fixed; top: 65px; left: 0; right: 0;
+        background: #120A0D; border-bottom: 1px solid var(--border);
+        flex-direction: column; padding: 1.2rem 1.5rem; gap: .8rem;
+        z-index: 998; box-shadow: 0 8px 24px rgba(0,0,0,.4);
+      }
       nav.open { display: flex; }
+      nav a { font-size: .95rem; padding: .4rem 0; border-bottom: 1px solid var(--border); }
+      nav a:last-child { border-bottom: none; }
       .menu-toggle { display: block; }
-      .footer-top { grid-template-columns: 1fr; gap: 2rem; }
+      #authArea { margin-right: .2rem; }
+      .btn-auth { padding: 6px 12px; font-size: .78rem; }
+      .user-chip-name span:not(i) { display: none; }
+
+      /* Hero */
+      #hero { min-height: auto; padding: 48px 16px 40px; }
+      .hero-inner { gap: 1.8rem; }
+      .hero-badge { font-size: .75rem; }
+      .hero-title { font-size: clamp(1.8rem, 8vw, 2.6rem); }
+      .hero-desc { font-size: .88rem; }
+      .hero-actions { flex-direction: column; gap: .7rem; }
+      .hero-actions .btn { width: 100%; justify-content: center; padding: 13px 20px; }
+      .hero-card { padding: 1.4rem; }
+
+      /* About strip */
+      .about-strip { padding: 28px 16px; }
+      .about-item { display: flex; align-items: center; gap: 1rem; text-align: left; }
+      .about-item i { font-size: 1.4rem; margin-bottom: 0; flex-shrink: 0; }
+
+      /* Services */
+      .services-grid { grid-template-columns: 1fr; }
+
+      /* Combos */
+      .combos-grid { grid-template-columns: 1fr; }
+      .combo-notice { font-size: .82rem; padding: 10px 14px; }
+
+      /* Booking */
+      .booking-wrapper { padding: 1.2rem 1rem; border-radius: var(--radius); }
+      .steps { margin-bottom: 1.8rem; }
       .steps::before { display: none; }
       .step-label { display: none; }
-      .booking-wrapper { padding: 1.5rem; }
-      .footer-bottom { flex-direction: column; text-align: center; }
+      .step-num { width: 30px; height: 30px; font-size: .75rem; }
+      .step-title { font-size: 1rem; margin-bottom: 1.2rem; }
+      .time-slots { grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: .5rem; }
+      .time-slot { padding: 10px 4px; font-size: .82rem; }
+      .btn-booking { padding: 13px; font-size: .9rem; }
+      .summary-row { font-size: .82rem; }
+      .booking-success { padding: 1.2rem .5rem; }
+      .booking-success h3 { font-size: 1.2rem; }
+
+      /* Contact */
+      #contato { padding: 52px 16px; }
+      .contact-info h3 { font-size: 1.2rem; }
+
+      /* Footer */
+      .footer-top { grid-template-columns: 1fr; gap: 1.8rem; }
+      .footer-bottom { flex-direction: column; text-align: center; gap: .4rem; }
+
+      /* Float WhatsApp */
+      .float-whatsapp { bottom: 18px; right: 18px; width: 50px; height: 50px; font-size: 1.4rem; }
+      .float-whatsapp::before { display: none; }
+
+      /* Auth modal */
+      .auth-overlay { align-items: flex-end; padding: 0; }
+      .auth-modal { border-radius: 20px 20px 0 0; max-width: 100%; max-height: 92vh; overflow-y: auto; }
+
+      /* My panel */
+      .my-panel { max-width: 100%; }
+
+      /* Reschedule */
+      .reschedule-overlay { align-items: flex-end; padding: 0; }
+      .reschedule-modal { border-radius: 20px 20px 0 0; max-width: 100%; }
+    }
+
+    @media (max-width: 400px) {
+      .hero-title { font-size: 1.7rem; }
+      .section-title { font-size: 1.5rem; }
+      .time-slots { grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); }
     }
 
     /* ===== AUTH BUTTON ===== */

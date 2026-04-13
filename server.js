@@ -111,7 +111,7 @@ app.post('/send-booking-email', async (req, res) => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        from: 'Studio Beauty <contato@fluzzia.com>',
+        from: 'Studio Beauty <contato@fluzzia.net>',
         to: [email],
         subject: '✅ Agendamento Confirmado — Studio Beauty',
         html

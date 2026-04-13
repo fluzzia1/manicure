@@ -897,19 +897,32 @@ async function deleteBooking(id) {
 ============================================================ */
 async function renderClients() {
   const query = (document.getElementById('filterClient').value||'').toLowerCase();
-  const bookings = await loadBookings();
+  const [bookings, profilesRes] = await Promise.all([
+    loadBookings(),
+    db.from('profiles').select('*')
+  ]);
+  const profiles = profilesRes.data || [];
 
-  // Build unique clients map by phone
+  // Build unique clients map — merge bookings + profiles
   const map = {};
+
+  // 1. Clients from bookings
   bookings.forEach(b=>{
     const key = b.phone||b.name;
-    if (!map[key]) map[key] = { name:b.name, phone:b.phone, bookings:[], firstDate:b.date };
+    if (!map[key]) map[key] = { name:b.name, phone:b.phone, bookings:[], firstDate:b.date, registered:false };
     map[key].bookings.push(b);
     if (b.date < map[key].firstDate) map[key].firstDate = b.date;
   });
 
+  // 2. Registered profiles (may not have bookings yet)
+  profiles.forEach(p=>{
+    const key = p.phone||p.email;
+    if (!map[key]) map[key] = { name:p.name, phone:p.phone, email:p.email, bookings:[], firstDate:null, registered:true };
+    else map[key].registered = true;
+  });
+
   let clients = Object.values(map);
-  if (query) clients = clients.filter(c=>c.name.toLowerCase().includes(query)||c.phone.includes(query));
+  if (query) clients = clients.filter(c=>c.name.toLowerCase().includes(query)||(c.phone||'').includes(query)||(c.email||'').toLowerCase().includes(query));
   clients.sort((a,b)=>b.bookings.length-a.bookings.length);
 
   document.getElementById('clientCount').textContent = `${clients.length} cliente${clients.length!==1?'s':''}`;
@@ -921,20 +934,21 @@ async function renderClients() {
   }
 
   grid.innerHTML = clients.map(c=>{
-    const last = c.bookings.sort((a,b)=>b.date.localeCompare(a.date))[0];
+    const last   = c.bookings.length ? c.bookings.sort((a,b)=>b.date.localeCompare(a.date))[0] : null;
     const digits = (c.phone||'').replace(/\D/g,'');
-    const color = avatarColor(c.name);
+    const color  = avatarColor(c.name);
     return `
       <div class="client-card">
         <div class="client-avatar" style="background:${color};">${initials(c.name)}</div>
         <div class="client-info">
-          <h4>${escHtml(c.name)}</h4>
-          <p class="client-phone"><a href="https://wa.me/55${digits}" target="_blank">${escHtml(c.phone)}</a></p>
+          <h4>${escHtml(c.name)} ${c.registered ? '<span style="font-size:.65rem;background:#EAF0FB;color:#4A7BC9;padding:1px 7px;border-radius:50px;font-weight:600;">Cadastrado</span>' : ''}</h4>
+          <p class="client-phone"><a href="https://wa.me/55${digits}" target="_blank">${escHtml(c.phone||'—')}</a></p>
+          ${c.email ? `<p style="font-size:.73rem;color:var(--muted);">${escHtml(c.email)}</p>` : ''}
           <div class="client-stats">
             <span class="client-stat">Visitas: <strong>${c.bookings.length}</strong></span>
-            <span class="client-stat">Último: <strong>${formatDateBR(last.date)}</strong></span>
+            ${last ? `<span class="client-stat">Último: <strong>${formatDateBR(last.date)}</strong></span>` : ''}
           </div>
-          <p style="font-size:.73rem;color:var(--muted);margin-top:.3rem;">Últ. serviço: ${escHtml(last.service)}</p>
+          ${last ? `<p style="font-size:.73rem;color:var(--muted);margin-top:.3rem;">Últ. serviço: ${escHtml(last.service)}</p>` : '<p style="font-size:.73rem;color:var(--muted);margin-top:.3rem;">Nenhum agendamento ainda</p>'}
         </div>
       </div>
     `;

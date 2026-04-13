@@ -341,6 +341,158 @@
       .booking-wrapper { padding: 1.5rem; }
       .footer-bottom { flex-direction: column; text-align: center; }
     }
+
+    /* ===== AUTH BUTTON ===== */
+    .btn-auth {
+      background: transparent; border: 1.5px solid var(--rose); color: var(--rose);
+      padding: 7px 16px; border-radius: 50px; font-size: .82rem; font-weight: 600;
+      cursor: pointer; font-family: 'Poppins', sans-serif; transition: all var(--transition);
+      display: flex; align-items: center; gap: 6px; white-space: nowrap;
+    }
+    .btn-auth:hover { background: var(--rose); color: #fff; }
+    .user-chip {
+      display: flex; align-items: center; gap: 8px; position: relative;
+    }
+    .user-chip-name {
+      font-size: .85rem; font-weight: 600; color: var(--dark); cursor: pointer;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .user-chip-name i { color: var(--rose); font-size: .8rem; }
+    .user-dropdown {
+      position: absolute; top: calc(100% + 10px); right: 0; min-width: 190px;
+      background: var(--white); border: 1px solid var(--border); border-radius: var(--radius);
+      box-shadow: 0 8px 28px var(--shadow); z-index: 999; overflow: hidden;
+      display: none;
+    }
+    .user-dropdown.open { display: block; }
+    .user-dropdown-item {
+      display: flex; align-items: center; gap: 8px; padding: 11px 16px;
+      font-size: .85rem; color: var(--text); cursor: pointer; transition: background .15s;
+      border: none; background: none; width: 100%; font-family: 'Poppins', sans-serif;
+      text-align: left;
+    }
+    .user-dropdown-item:hover { background: var(--bg); }
+    .user-dropdown-item i { color: var(--rose); width: 14px; }
+    .user-dropdown-item.logout { color: #B33; }
+    .user-dropdown-item.logout i { color: #B33; }
+    .user-dropdown-divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+    /* ===== AUTH MODAL ===== */
+    .auth-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45);
+      z-index: 1000; align-items: center; justify-content: center; padding: 1rem;
+    }
+    .auth-overlay.open { display: flex; }
+    .auth-modal {
+      background: var(--white); border-radius: 20px; width: 100%; max-width: 420px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.25); overflow: hidden;
+    }
+    .auth-header {
+      padding: 1.4rem 1.5rem 0; display: flex; justify-content: space-between; align-items: center;
+    }
+    .auth-header h3 { font-size: 1.1rem; color: var(--dark); }
+    .auth-close { background: none; border: none; font-size: 1.2rem; color: var(--text-muted); cursor: pointer; padding: 4px; }
+    .auth-tabs {
+      display: flex; border-bottom: 1px solid var(--border); margin: 1rem 1.5rem 0;
+    }
+    .auth-tab {
+      flex: 1; padding: .7rem; text-align: center; font-size: .85rem; font-weight: 600;
+      color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent;
+      transition: all .2s; background: none; border-top: none; border-left: none; border-right: none;
+      font-family: 'Poppins', sans-serif;
+    }
+    .auth-tab.active { color: var(--rose); border-bottom-color: var(--rose); }
+    .auth-body { padding: 1.4rem 1.5rem 1.5rem; }
+    .auth-form { display: none; }
+    .auth-form.active { display: block; }
+    .auth-field { margin-bottom: 1rem; }
+    .auth-field label { display: block; font-size: .82rem; font-weight: 600; color: var(--text); margin-bottom: .35rem; }
+    .auth-input {
+      width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: var(--radius);
+      font-size: .88rem; color: var(--dark); font-family: 'Poppins', sans-serif; outline: none;
+      transition: border-color .2s; background: var(--white);
+    }
+    .auth-input:focus { border-color: var(--rose); }
+    .btn-auth-submit {
+      width: 100%; padding: 12px; background: var(--rose); color: #fff; border: none;
+      border-radius: var(--radius); font-size: .92rem; font-weight: 600; cursor: pointer;
+      font-family: 'Poppins', sans-serif; transition: background .2s; margin-top: .5rem;
+    }
+    .btn-auth-submit:hover { background: var(--rose-dark); }
+    .btn-auth-submit:disabled { opacity: .6; cursor: not-allowed; }
+    .auth-error {
+      background: #FEF0F0; border: 1px solid #FBCACA; color: #B33;
+      border-radius: var(--radius); padding: 9px 12px; font-size: .82rem;
+      margin-bottom: 1rem; display: none;
+    }
+    .auth-error.show { display: block; }
+    .auth-success {
+      background: #EAF5EE; border: 1px solid #A8E0C0; color: #2E7D52;
+      border-radius: var(--radius); padding: 9px 12px; font-size: .82rem;
+      margin-bottom: 1rem; display: none;
+    }
+    .auth-success.show { display: block; }
+    .auth-switch { text-align: center; font-size: .8rem; color: var(--text-muted); margin-top: 1rem; }
+    .auth-switch a { color: var(--rose); font-weight: 600; cursor: pointer; }
+
+    /* ===== MY BOOKINGS PANEL ===== */
+    .my-panel-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 999;
+    }
+    .my-panel-overlay.open { display: block; }
+    .my-panel {
+      position: fixed; top: 0; right: -480px; width: 100%; max-width: 460px;
+      height: 100vh; background: var(--white); z-index: 1000; overflow-y: auto;
+      box-shadow: -8px 0 40px rgba(0,0,0,.2); transition: right .35s ease;
+      display: flex; flex-direction: column;
+    }
+    .my-panel.open { right: 0; }
+    .my-panel-header {
+      padding: 1.3rem 1.5rem; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--white); position: sticky; top: 0; z-index: 1;
+    }
+    .my-panel-header h3 { font-size: 1rem; font-weight: 700; color: var(--dark); display: flex; align-items: center; gap: 8px; }
+    .my-panel-header h3 i { color: var(--rose); }
+    .my-panel-close { background: none; border: none; font-size: 1.2rem; color: var(--text-muted); cursor: pointer; }
+    .my-panel-body { padding: 1.2rem 1.5rem; flex: 1; }
+    .my-booking-card {
+      background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem 1.1rem; margin-bottom: .8rem; position: relative;
+    }
+    .my-booking-card.cancelled { opacity: .55; }
+    .my-booking-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: .5rem; }
+    .my-booking-service { font-size: .9rem; font-weight: 700; color: var(--dark); }
+    .my-booking-meta { font-size: .8rem; color: var(--text-muted); margin-bottom: .6rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+    .my-booking-meta i { color: var(--rose); }
+    .my-booking-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
+    .btn-reschedule {
+      background: var(--rose-light); color: var(--rose); border: none; border-radius: 8px;
+      padding: 6px 12px; font-size: .78rem; font-weight: 600; cursor: pointer;
+      font-family: 'Poppins', sans-serif; transition: background .2s;
+    }
+    .btn-reschedule:hover { background: var(--border); }
+    .btn-cancel-booking {
+      background: #FEF0F0; color: #B33; border: none; border-radius: 8px;
+      padding: 6px 12px; font-size: .78rem; font-weight: 600; cursor: pointer;
+      font-family: 'Poppins', sans-serif; transition: background .2s;
+    }
+    .btn-cancel-booking:hover { background: #FBCACA; }
+    .my-panel-empty { text-align: center; padding: 2.5rem 1rem; color: var(--text-muted); }
+    .my-panel-empty i { font-size: 2.5rem; opacity: .25; display: block; margin-bottom: .8rem; }
+
+    /* ===== RESCHEDULE MODAL ===== */
+    .reschedule-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45);
+      z-index: 1100; align-items: center; justify-content: center; padding: 1rem;
+    }
+    .reschedule-overlay.open { display: flex; }
+    .reschedule-modal {
+      background: var(--white); border-radius: 16px; width: 100%; max-width: 400px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.25); padding: 1.5rem;
+    }
+    .reschedule-modal h3 { font-size: 1rem; font-weight: 700; color: var(--dark); margin-bottom: 1.2rem; display: flex; align-items: center; gap: 8px; }
+    .reschedule-modal h3 i { color: var(--rose); }
   </style>
 </head>
 <body>
@@ -364,11 +516,101 @@
         <i class="fa-brands fa-whatsapp"></i> WhatsApp
       </a>
     </nav>
+    <div id="authArea">
+      <button class="btn-auth" id="btnOpenAuth"><i class="fa-solid fa-user"></i> Entrar</button>
+    </div>
     <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu">
       <span></span><span></span><span></span>
     </button>
   </div>
 </header>
+
+<!-- ===== AUTH MODAL ===== -->
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-modal">
+    <div class="auth-header">
+      <h3 id="authModalTitle">Acesse sua conta</h3>
+      <button class="auth-close" id="authClose"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Entrar</button>
+      <button class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">Criar Conta</button>
+    </div>
+    <div class="auth-body">
+      <!-- LOGIN -->
+      <div class="auth-form active" id="formLogin">
+        <div class="auth-error" id="loginError"></div>
+        <div class="auth-field">
+          <label>E-mail</label>
+          <input class="auth-input" type="email" id="loginEmail" placeholder="seu@email.com" autocomplete="email"/>
+        </div>
+        <div class="auth-field">
+          <label>Senha</label>
+          <input class="auth-input" type="password" id="loginPass" placeholder="Sua senha" autocomplete="current-password"/>
+        </div>
+        <button class="btn-auth-submit" id="btnLogin">Entrar</button>
+        <p class="auth-switch">Não tem conta? <a onclick="switchAuthTab('register')">Criar conta grátis</a></p>
+      </div>
+      <!-- REGISTER -->
+      <div class="auth-form" id="formRegister">
+        <div class="auth-error" id="registerError"></div>
+        <div class="auth-success" id="registerSuccess"></div>
+        <div class="auth-field">
+          <label>Nome completo</label>
+          <input class="auth-input" type="text" id="regName" placeholder="Seu nome"/>
+        </div>
+        <div class="auth-field">
+          <label>E-mail</label>
+          <input class="auth-input" type="email" id="regEmail" placeholder="seu@email.com" autocomplete="email"/>
+        </div>
+        <div class="auth-field">
+          <label>WhatsApp / Telefone</label>
+          <input class="auth-input" type="tel" id="regPhone" placeholder="(XX) 9XXXX-XXXX"/>
+        </div>
+        <div class="auth-field">
+          <label>Senha</label>
+          <input class="auth-input" type="password" id="regPass" placeholder="Mínimo 6 caracteres" autocomplete="new-password"/>
+        </div>
+        <button class="btn-auth-submit" id="btnRegister">Criar Conta</button>
+        <p class="auth-switch">Já tem conta? <a onclick="switchAuthTab('login')">Entrar</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MY BOOKINGS PANEL ===== -->
+<div class="my-panel-overlay" id="myPanelOverlay" onclick="closeMyPanel()"></div>
+<div class="my-panel" id="myPanel">
+  <div class="my-panel-header">
+    <h3><i class="fa-solid fa-calendar-check"></i> Meus Agendamentos</h3>
+    <button class="my-panel-close" onclick="closeMyPanel()"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="my-panel-body" id="myPanelBody">
+    <div class="my-panel-empty"><i class="fa-solid fa-spinner fa-spin"></i></div>
+  </div>
+</div>
+
+<!-- ===== RESCHEDULE MODAL ===== -->
+<div class="reschedule-overlay" id="rescheduleOverlay">
+  <div class="reschedule-modal">
+    <h3><i class="fa-solid fa-calendar-pen"></i> Remarcar Agendamento</h3>
+    <div class="auth-error" id="rescheduleError"></div>
+    <input type="hidden" id="rescheduleId"/>
+    <input type="hidden" id="rescheduleDuration"/>
+    <div class="auth-field">
+      <label>Nova data</label>
+      <input class="auth-input" type="date" id="rescheduleDate"/>
+    </div>
+    <div class="auth-field">
+      <label>Novo horário</label>
+      <div id="rescheduleSlots" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:.5rem;margin-top:.4rem;"></div>
+    </div>
+    <div style="display:flex;gap:.6rem;margin-top:1.2rem;">
+      <button class="btn-cancel-booking" style="flex:1;padding:10px;" onclick="closeReschedule()">Cancelar</button>
+      <button class="btn-auth-submit" style="margin-top:0;flex:1;" id="btnConfirmReschedule">Confirmar</button>
+    </div>
+  </div>
+</div>
 
 <!-- ===== HERO ===== -->
 <section id="hero">
@@ -1021,7 +1263,8 @@
       time:     state.time,
       duration: state.service.duration,
       service:  state.service.name,
-      price:    state.service.price
+      price:    state.service.price,
+      user_id:  currentUser?.id || null
     }]);
 
     btn.disabled  = false;
@@ -1085,10 +1328,297 @@
   });
 
   /* ======================================
+     AUTH STATE
+  ====================================== */
+  let currentUser = null;
+
+  function renderAuthArea(user) {
+    const area = document.getElementById('authArea');
+    if (!user) {
+      area.innerHTML = `<button class="btn-auth" id="btnOpenAuth"><i class="fa-solid fa-user"></i> Entrar</button>`;
+      document.getElementById('btnOpenAuth').addEventListener('click', openAuthModal);
+    } else {
+      const firstName = (user.profile?.name || user.email).split(' ')[0];
+      area.innerHTML = `
+        <div class="user-chip">
+          <div class="user-chip-name" id="userChipBtn">
+            <i class="fa-solid fa-circle-user"></i> ${firstName} <i class="fa-solid fa-chevron-down" style="font-size:.65rem;"></i>
+          </div>
+          <div class="user-dropdown" id="userDropdown">
+            <button class="user-dropdown-item" onclick="openMyPanel()"><i class="fa-solid fa-calendar-check"></i> Meus Agendamentos</button>
+            <hr class="user-dropdown-divider"/>
+            <button class="user-dropdown-item logout" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
+          </div>
+        </div>`;
+      document.getElementById('userChipBtn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        document.getElementById('userDropdown').classList.toggle('open');
+      });
+      document.addEventListener('click', () => {
+        const d = document.getElementById('userDropdown');
+        if (d) d.classList.remove('open');
+      }, { once: true });
+    }
+  }
+
+  db.auth.onAuthStateChange(async (event, session) => {
+    if (session?.user) {
+      currentUser = session.user;
+      const { data: profile } = await db.from('profiles').select('*').eq('id', session.user.id).single();
+      currentUser.profile = profile;
+      renderAuthArea(currentUser);
+      prefillBookingForm();
+    } else {
+      currentUser = null;
+      renderAuthArea(null);
+      prefillBookingForm();
+    }
+  });
+
+  function prefillBookingForm() {
+    const nameEl  = document.getElementById('inputName');
+    const phoneEl = document.getElementById('inputPhone');
+    if (!nameEl || !phoneEl) return;
+    if (currentUser?.profile) {
+      nameEl.value  = currentUser.profile.name;
+      phoneEl.value = currentUser.profile.phone;
+    } else {
+      nameEl.value  = '';
+      phoneEl.value = '';
+    }
+  }
+
+  /* ======================================
+     AUTH MODAL
+  ====================================== */
+  function openAuthModal() {
+    document.getElementById('authOverlay').classList.add('open');
+    document.getElementById('loginEmail').focus();
+  }
+
+  function closeAuthModal() {
+    document.getElementById('authOverlay').classList.remove('open');
+  }
+
+  function switchAuthTab(tab) {
+    document.getElementById('formLogin').classList.toggle('active', tab === 'login');
+    document.getElementById('formRegister').classList.toggle('active', tab === 'register');
+    document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+    document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+  }
+
+  document.getElementById('authClose').addEventListener('click', closeAuthModal);
+  document.getElementById('authOverlay').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeAuthModal();
+  });
+
+  /* LOGIN */
+  document.getElementById('btnLogin').addEventListener('click', async () => {
+    const email = document.getElementById('loginEmail').value.trim();
+    const pass  = document.getElementById('loginPass').value;
+    const errEl = document.getElementById('loginError');
+    errEl.classList.remove('show');
+
+    if (!email || !pass) { errEl.textContent = 'Preencha e-mail e senha.'; errEl.classList.add('show'); return; }
+
+    const btn = document.getElementById('btnLogin');
+    btn.disabled = true; btn.textContent = 'Entrando...';
+
+    const { error } = await db.auth.signInWithPassword({ email, password: pass });
+    btn.disabled = false; btn.textContent = 'Entrar';
+
+    if (error) {
+      errEl.textContent = 'E-mail ou senha incorretos.';
+      errEl.classList.add('show');
+    } else {
+      closeAuthModal();
+    }
+  });
+
+  /* REGISTER */
+  document.getElementById('btnRegister').addEventListener('click', async () => {
+    const name  = document.getElementById('regName').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const phone = document.getElementById('regPhone').value.trim();
+    const pass  = document.getElementById('regPass').value;
+    const errEl = document.getElementById('registerError');
+    const okEl  = document.getElementById('registerSuccess');
+    errEl.classList.remove('show'); okEl.classList.remove('show');
+
+    if (!name || !email || !phone || !pass) { errEl.textContent = 'Preencha todos os campos.'; errEl.classList.add('show'); return; }
+    if (pass.length < 6) { errEl.textContent = 'A senha deve ter pelo menos 6 caracteres.'; errEl.classList.add('show'); return; }
+
+    const btn = document.getElementById('btnRegister');
+    btn.disabled = true; btn.textContent = 'Criando conta...';
+
+    const { data, error } = await db.auth.signUp({ email, password: pass });
+    if (error) {
+      btn.disabled = false; btn.textContent = 'Criar Conta';
+      errEl.textContent = error.message.includes('already') ? 'Este e-mail já está cadastrado.' : 'Erro ao criar conta. Tente novamente.';
+      errEl.classList.add('show'); return;
+    }
+
+    if (data.user) {
+      await db.from('profiles').insert([{ id: data.user.id, name, phone, email }]);
+    }
+
+    btn.disabled = false; btn.textContent = 'Criar Conta';
+    okEl.textContent = 'Conta criada com sucesso! Verifique seu e-mail para confirmar.';
+    okEl.classList.add('show');
+    ['regName','regEmail','regPhone','regPass'].forEach(id => document.getElementById(id).value = '');
+  });
+
+  /* LOGOUT */
+  async function doLogout() {
+    await db.auth.signOut();
+  }
+
+  /* ======================================
+     MY BOOKINGS PANEL
+  ====================================== */
+  async function openMyPanel() {
+    document.getElementById('myPanel').classList.add('open');
+    document.getElementById('myPanelOverlay').classList.add('open');
+    await loadMyBookings();
+  }
+
+  function closeMyPanel() {
+    document.getElementById('myPanel').classList.remove('open');
+    document.getElementById('myPanelOverlay').classList.remove('open');
+  }
+
+  async function loadMyBookings() {
+    if (!currentUser) return;
+    const body = document.getElementById('myPanelBody');
+    body.innerHTML = '<div class="my-panel-empty"><i class="fa-solid fa-spinner fa-spin" style="font-size:1.8rem;"></i></div>';
+
+    const { data: bookings } = await db
+      .from('agendamentos')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .order('date', { ascending: true })
+      .order('time', { ascending: true });
+
+    if (!bookings || !bookings.length) {
+      body.innerHTML = `<div class="my-panel-empty"><i class="fa-solid fa-calendar-xmark"></i><p>Nenhum agendamento encontrado.<br>Que tal <a href="#agendamento" onclick="closeMyPanel()" style="color:var(--rose);font-weight:600;">agendar agora</a>?</p></div>`;
+      return;
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+    body.innerHTML = bookings.map(b => {
+      const isPast      = b.date < today;
+      const isCancelled = b.cancelled;
+      const statusLabel = isCancelled ? 'Cancelado' : b.done ? 'Concluído' : isPast ? 'Realizado' : b.date === today ? 'Hoje' : 'Agendado';
+      const statusColor = isCancelled ? '#B33' : (b.done || isPast) ? '#4CA87A' : 'var(--rose)';
+      const canAct      = !isCancelled && !b.done && b.date >= today;
+
+      return `
+        <div class="my-booking-card ${isCancelled ? 'cancelled' : ''}">
+          <div class="my-booking-top">
+            <span class="my-booking-service">${b.service}</span>
+            <span style="font-size:.72rem;font-weight:700;color:${statusColor};">${statusLabel}</span>
+          </div>
+          <div class="my-booking-meta">
+            <span><i class="fa-regular fa-calendar"></i> ${formatDateBR(b.date)}</span>
+            <span><i class="fa-regular fa-clock"></i> ${b.time} (${formatDuration(b.duration)})</span>
+            <span><i class="fa-solid fa-tag"></i> ${b.price}</span>
+          </div>
+          ${canAct ? `
+          <div class="my-booking-actions">
+            <button class="btn-reschedule" onclick="openReschedule('${b.id}', ${b.duration})">
+              <i class="fa-solid fa-calendar-pen"></i> Remarcar
+            </button>
+            <button class="btn-cancel-booking" onclick="cancelMyBooking('${b.id}')">
+              <i class="fa-solid fa-ban"></i> Cancelar
+            </button>
+          </div>` : ''}
+        </div>`;
+    }).join('');
+  }
+
+  async function cancelMyBooking(id) {
+    if (!confirm('Cancelar este agendamento?')) return;
+    await db.from('agendamentos').update({ cancelled: true }).eq('id', id);
+    await loadMyBookings();
+  }
+
+  /* ======================================
+     RESCHEDULE
+  ====================================== */
+  let rescheduleSelectedTime = null;
+
+  async function openReschedule(id, duration) {
+    rescheduleSelectedTime = null;
+    document.getElementById('rescheduleId').value = id;
+    document.getElementById('rescheduleDuration').value = duration;
+    document.getElementById('rescheduleError').classList.remove('show');
+    document.getElementById('rescheduleSlots').innerHTML = '';
+
+    const today = new Date();
+    const minDate = today.toISOString().split('T')[0];
+    const dateEl = document.getElementById('rescheduleDate');
+    dateEl.min = minDate;
+    dateEl.value = '';
+
+    dateEl.onchange = async function() {
+      const slots = await getAvailableSlots(this.value, +document.getElementById('rescheduleDuration').value);
+      const container = document.getElementById('rescheduleSlots');
+      rescheduleSelectedTime = null;
+      if (!slots.length) {
+        container.innerHTML = '<p style="font-size:.82rem;color:var(--text-muted);">Nenhum horário disponível.</p>';
+        return;
+      }
+      container.innerHTML = slots.map(s => `
+        <button class="time-slot ${s.busy ? 'busy' : ''}" data-time="${s.time}" ${s.busy ? 'disabled' : ''}>${s.time}</button>
+      `).join('');
+      container.querySelectorAll('.time-slot:not(.busy)').forEach(btn => {
+        btn.addEventListener('click', function() {
+          container.querySelectorAll('.time-slot').forEach(b => b.classList.remove('selected'));
+          this.classList.add('selected');
+          rescheduleSelectedTime = this.dataset.time;
+        });
+      });
+    };
+
+    document.getElementById('rescheduleOverlay').classList.add('open');
+  }
+
+  function closeReschedule() {
+    document.getElementById('rescheduleOverlay').classList.remove('open');
+  }
+
+  document.getElementById('btnConfirmReschedule').addEventListener('click', async () => {
+    const id      = document.getElementById('rescheduleId').value;
+    const date    = document.getElementById('rescheduleDate').value;
+    const errEl   = document.getElementById('rescheduleError');
+    errEl.classList.remove('show');
+
+    if (!date) { errEl.textContent = 'Selecione uma data.'; errEl.classList.add('show'); return; }
+    if (!rescheduleSelectedTime) { errEl.textContent = 'Selecione um horário.'; errEl.classList.add('show'); return; }
+
+    const btn = document.getElementById('btnConfirmReschedule');
+    btn.disabled = true; btn.textContent = 'Salvando...';
+
+    await db.from('agendamentos').update({ date, time: rescheduleSelectedTime }).eq('id', id);
+
+    btn.disabled = false; btn.textContent = 'Confirmar';
+    closeReschedule();
+    await loadMyBookings();
+  });
+
+  /* ======================================
+     LINK USER TO BOOKING ON SUBMIT
+  ====================================== */
+  const _origBtnStep4Handler = document.getElementById('btnStep4');
+  // Patch the insert to include user_id
+  // (handled inside btnStep4 listener — we override state before insert)
+
+  /* ======================================
      INIT
   ====================================== */
   renderServices();
   renderCombos();
+  renderAuthArea(null);
 </script>
 </body>
 </html>

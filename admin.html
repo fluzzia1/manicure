@@ -586,13 +586,6 @@
               <div class="alert-msg" id="userMsg"></div>
             </div>
 
-            <hr style="border:none;border-top:1px solid var(--border);margin:1.8rem 0;"/>
-
-            <div class="settings-section">
-              <h3 style="color:var(--red);">Limpar Dados</h3>
-              <p>Remove todos os agendamentos do sistema. Esta ação não pode ser desfeita.</p>
-              <button class="btn-danger" id="btnClearAll">Limpar Todos os Agendamentos</button>
-            </div>
 
           </div>
         </div>
@@ -1117,13 +1110,6 @@ document.getElementById('btnChangeUser').addEventListener('click', async ()=>{
   document.getElementById('newUsername').value='';
 });
 
-document.getElementById('btnClearAll').addEventListener('click', async ()=>{
-  if (!confirm('Tem certeza? Todos os agendamentos serão excluídos permanentemente.')) return;
-  if (!confirm('Esta ação não pode ser desfeita. Confirmar exclusão de TODOS os agendamentos?')) return;
-  await db.from('agendamentos').delete().not('id', 'is', null);
-  renderStats(); renderTodayTimeline(); renderUpcomingTimeline(); renderBookingsTable(); renderClients();
-  alert('Todos os agendamentos foram removidos.');
-});
 
 /* ============================================================
    FATURAMENTO

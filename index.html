@@ -1407,6 +1407,24 @@
       return;
     }
 
+    // Envia email de confirmação (não bloqueia o fluxo)
+    const userEmail = profile?.email || currentUser.email;
+    if (userEmail) {
+      fetch('/send-booking-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name:     profile?.name  || currentUser.email,
+          email:    userEmail,
+          service:  state.service.name,
+          date:     state.date,
+          time:     state.time,
+          duration: state.service.duration,
+          price:    state.service.price
+        })
+      }).catch(err => console.warn('Email não enviado:', err));
+    }
+
     renderSuccess();
     goToStep(5);
   });

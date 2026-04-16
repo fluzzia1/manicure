@@ -9,103 +9,179 @@ app.use(express.static(__dirname));
 app.use(express.json());
 
 /* ============================================================
-   ADMIN SESSION TOKENS (em memória — limpa ao reiniciar)
+   SUPABASE SERVICE ROLE HELPER
 ============================================================ */
-const adminSessions = new Map(); // token -> expiry timestamp
-
-function adminMiddleware(req, res, next) {
-  const token = req.headers['x-admin-token'];
-  if (!token) return res.status(401).json({ error: 'Não autorizado.' });
-  const expiry = adminSessions.get(token);
-  if (!expiry || Date.now() > expiry) {
-    adminSessions.delete(token);
-    return res.status(401).json({ error: 'Sessão expirada. Faça login novamente.' });
-  }
-  next();
-}
-
-// Login admin → retorna token
-app.post('/admin/auth', (req, res) => {
-  const { username, password } = req.body;
-  const validUser = process.env.ADMIN_USERNAME || 'irineia';
-  const validPass = process.env.ADMIN_PASSWORD || '12345';
-  if (username !== validUser || password !== validPass) {
-    return res.status(401).json({ error: 'Credenciais inválidas.' });
-  }
-  const token = crypto.randomBytes(32).toString('hex');
-  adminSessions.set(token, Date.now() + 8 * 60 * 60 * 1000); // 8 horas
-  res.json({ token });
-});
-
-/* ============================================================
-   SUPABASE SERVICE ROLE HELPER (bypassa RLS)
-============================================================ */
-async function supaAdmin(method, resource, body) {
+async function supaFetch(method, path, body) {
   const serviceKey = process.env.SUPABASE_SERVICE_KEY;
   if (!serviceKey) throw new Error('SUPABASE_SERVICE_KEY não configurada.');
-
-  const url = `${SUPABASE_URL}/rest/v1/${resource}`;
-  const r = await fetch(url, {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
     method,
     headers: {
       'Authorization': `Bearer ${serviceKey}`,
       'apikey':        serviceKey,
       'Content-Type':  'application/json',
-      'Prefer':        'return=minimal'
+      'Prefer':        'return=representation'
     },
     body: body ? JSON.stringify(body) : undefined
   });
-  return r;
+  const isJson = r.headers.get('content-type')?.includes('json');
+  const data   = isJson ? await r.json() : null;
+  return { ok: r.ok, status: r.status, data };
 }
 
 /* ============================================================
-   ADMIN BOOKING ROUTES
+   RESOLVE SLUG DO SALÃO A PARTIR DA REQUISIÇÃO
+   Ordem: query ?salao=slug → body.slug → subdomínio
 ============================================================ */
+function resolveSlug(req) {
+  if (req.query.salao) return req.query.salao;
+  if (req.body?.slug)  return req.body.slug;
+  const host = req.headers.host || '';
+  const sub  = host.split('.')[0];
+  if (sub && sub !== 'www' && !/localhost|127\.0\.0\.1/.test(host)) return sub;
+  return null;
+}
 
-// Atualizar agendamento (marcar como feito, cancelar, remarcar)
-app.patch('/admin/booking/:id', adminMiddleware, async (req, res) => {
+/* ============================================================
+   CONFIG — retorna dados do salão, serviços e combos
+============================================================ */
+app.get('/config', async (req, res) => {
   try {
-    const r = await supaAdmin('PATCH', `agendamentos?id=eq.${req.params.id}`, req.body);
-    res.status(r.ok ? 200 : 500).json({ ok: r.ok });
+    let slug = resolveSlug(req);
+
+    if (!slug) {
+      // Dev: usa o primeiro salão cadastrado
+      const { data } = await supaFetch('GET', 'saloes?limit=1&select=slug');
+      if (!data?.length) return res.status(404).json({ error: 'Nenhum salão cadastrado.' });
+      slug = data[0].slug;
+    }
+
+    const { data: saloes } = await supaFetch('GET',
+      `saloes?slug=eq.${encodeURIComponent(slug)}&select=id,slug,nome,cor_primaria,whatsapp,instagram,endereco,bairro,cidade,horarios,email_from`
+    );
+    if (!saloes?.length) return res.status(404).json({ error: 'Salão não encontrado.' });
+    const salao = saloes[0];
+
+    const [{ data: servicos }, { data: combos }] = await Promise.all([
+      supaFetch('GET', `servicos?salao_id=eq.${salao.id}&ativo=eq.true&order=id.asc&select=id,nome,preco,duracao,icone,categoria`),
+      supaFetch('GET', `combos?salao_id=eq.${salao.id}&ativo=eq.true&order=id.asc&select=id,nome,preco,duracao`),
+    ]);
+
+    res.json({ salao, servicos: servicos || [], combos: combos || [] });
   } catch (e) {
+    console.error('/config error:', e);
     res.status(500).json({ error: e.message });
   }
 });
 
-// Excluir agendamento
-app.delete('/admin/booking/:id', adminMiddleware, async (req, res) => {
-  try {
-    const r = await supaAdmin('DELETE', `agendamentos?id=eq.${req.params.id}`);
-    res.status(r.ok ? 200 : 500).json({ ok: r.ok });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
+/* ============================================================
+   ADMIN SESSIONS (em memória — limpa ao reiniciar)
+============================================================ */
+const adminSessions = new Map(); // token -> { expiry, salao_id }
 
-// Criar agendamento
-app.post('/admin/booking', adminMiddleware, async (req, res) => {
+function adminMiddleware(req, res, next) {
+  const token = req.headers['x-admin-token'];
+  if (!token) return res.status(401).json({ error: 'Não autorizado.' });
+  const session = adminSessions.get(token);
+  if (!session || Date.now() > session.expiry) {
+    adminSessions.delete(token);
+    return res.status(401).json({ error: 'Sessão expirada. Faça login novamente.' });
+  }
+  req.salao_id = session.salao_id;
+  next();
+}
+
+/* ============================================================
+   ADMIN AUTH — valida credenciais contra o banco por slug
+============================================================ */
+app.post('/admin/auth', async (req, res) => {
   try {
-    const r = await supaAdmin('POST', 'agendamentos', req.body);
-    res.status(r.ok ? 201 : 500).json({ ok: r.ok });
+    const { username, password } = req.body;
+    const slug = resolveSlug(req);
+
+    if (slug) {
+      const { data: saloes } = await supaFetch('GET',
+        `saloes?slug=eq.${encodeURIComponent(slug)}&select=id,admin_user,admin_pass`
+      );
+      const salao = saloes?.[0];
+      if (!salao || username !== salao.admin_user || password !== salao.admin_pass) {
+        return res.status(401).json({ error: 'Credenciais inválidas.' });
+      }
+      const token = crypto.randomBytes(32).toString('hex');
+      adminSessions.set(token, { expiry: Date.now() + 8 * 60 * 60 * 1000, salao_id: salao.id });
+      return res.json({ token });
+    }
+
+    // Fallback: variáveis de ambiente (compatibilidade)
+    const validUser = process.env.ADMIN_USERNAME || 'irineia';
+    const validPass = process.env.ADMIN_PASSWORD || '12345';
+    if (username !== validUser || password !== validPass) {
+      return res.status(401).json({ error: 'Credenciais inválidas.' });
+    }
+    const { data: saloes } = await supaFetch('GET', `saloes?admin_user=eq.${encodeURIComponent(validUser)}&select=id`);
+    const token = crypto.randomBytes(32).toString('hex');
+    adminSessions.set(token, { expiry: Date.now() + 8 * 60 * 60 * 1000, salao_id: saloes?.[0]?.id || null });
+    res.json({ token });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
 });
 
 /* ============================================================
-   SEND BOOKING CONFIRMATION EMAIL via Resend
+   ADMIN BOOKING ROUTES — filtrados por salao_id da sessão
+============================================================ */
+app.patch('/admin/booking/:id', adminMiddleware, async (req, res) => {
+  try {
+    const filter = req.salao_id
+      ? `agendamentos?id=eq.${req.params.id}&salao_id=eq.${req.salao_id}`
+      : `agendamentos?id=eq.${req.params.id}`;
+    const { ok } = await supaFetch('PATCH', filter, req.body);
+    res.status(ok ? 200 : 500).json({ ok });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.delete('/admin/booking/:id', adminMiddleware, async (req, res) => {
+  try {
+    const filter = req.salao_id
+      ? `agendamentos?id=eq.${req.params.id}&salao_id=eq.${req.salao_id}`
+      : `agendamentos?id=eq.${req.params.id}`;
+    const { ok } = await supaFetch('DELETE', filter);
+    res.status(ok ? 200 : 500).json({ ok });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post('/admin/booking', adminMiddleware, async (req, res) => {
+  try {
+    const body = req.salao_id ? { ...req.body, salao_id: req.salao_id } : req.body;
+    const { ok } = await supaFetch('POST', 'agendamentos', body);
+    res.status(ok ? 201 : 500).json({ ok });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+/* ============================================================
+   EMAIL DE CONFIRMAÇÃO via Resend
 ============================================================ */
 app.post('/send-booking-email', async (req, res) => {
-  const { name, email, service, date, time, duration, price } = req.body;
-
+  const { name, email, service, date, time, duration, price, salao_id } = req.body;
   if (!email || !name) return res.status(400).json({ error: 'Dados insuficientes.' });
 
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
   if (!RESEND_API_KEY) return res.status(500).json({ error: 'Serviço de email não configurado.' });
 
+  let salonNome = 'Studio Beauty', salonWa = '5531987899520', salonCidade = 'Horizonte — MG', emailFrom = 'contato@fluzzia.net';
+  if (salao_id) {
+    const { data } = await supaFetch('GET', `saloes?id=eq.${salao_id}&select=nome,whatsapp,cidade,email_from`)
+      .catch(() => ({ data: null }));
+    if (data?.[0]) {
+      salonNome   = data[0].nome       || salonNome;
+      salonWa     = data[0].whatsapp   || salonWa;
+      salonCidade = data[0].cidade     || salonCidade;
+      emailFrom   = data[0].email_from || emailFrom;
+    }
+  }
+
   const h = Math.floor(duration / 60), m = duration % 60;
   const durStr = h && m ? `${h}h${String(m).padStart(2,'0')}min` : h ? `${h}h` : `${m}min`;
-
   const [y, mo, d] = (date || '').split('-');
   const dateBR = date ? `${d}/${mo}/${y}` : '—';
 
@@ -146,7 +222,7 @@ app.post('/send-booking-email', async (req, res) => {
             <p style="margin:0 0 24px;font-size:14px;color:#7a5860;line-height:1.6;">Caso precise remarcar ou cancelar, acesse o site e vá em <strong>Meus Agendamentos</strong>.</p>
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr><td align="center">
-                <a href="https://wa.me/5531987899520" style="display:inline-block;background:#25D366;color:#fff;font-size:14px;font-weight:600;text-decoration:none;padding:12px 28px;border-radius:50px;">
+                <a href="https://wa.me/${salonWa}" style="display:inline-block;background:#25D366;color:#fff;font-size:14px;font-weight:600;text-decoration:none;padding:12px 28px;border-radius:50px;">
                   💬 Falar no WhatsApp
                 </a>
               </td></tr>
@@ -155,7 +231,7 @@ app.post('/send-booking-email', async (req, res) => {
         </tr>
         <tr>
           <td style="background:#fdf5f6;padding:20px 32px;text-align:center;border-top:1px solid #f0dde1;">
-            <p style="margin:0;font-size:12px;color:#b08090;">Studio Beauty — Horizonte, MG</p>
+            <p style="margin:0;font-size:12px;color:#b08090;">${salonNome} — ${salonCidade}</p>
             <p style="margin:4px 0 0;font-size:12px;color:#c9a0a8;">Este email foi enviado automaticamente. Não responda.</p>
           </td>
         </tr>
@@ -168,14 +244,11 @@ app.post('/send-booking-email', async (req, res) => {
   try {
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${RESEND_API_KEY}`,
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        from: 'Studio Beauty <contato@fluzzia.net>',
-        to: [email],
-        subject: '✅ Agendamento Confirmado — Studio Beauty',
+        from:    `${salonNome} <${emailFrom}>`,
+        to:      [email],
+        subject: `✅ Agendamento Confirmado — ${salonNome}`,
         html
       })
     });
@@ -188,6 +261,4 @@ app.post('/send-booking-email', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Studio Beauty rodando na porta ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Fluzzia rodando na porta ${PORT}`));

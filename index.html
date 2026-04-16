@@ -762,7 +762,7 @@
 <section id="hero">
   <div class="hero-inner">
     <div class="hero-content">
-      <div class="hero-badge"><i class="fa-solid fa-star"></i> Studio Beauty — Horizonte, MG</div>
+      <div class="hero-badge" id="heroBadge"><i class="fa-solid fa-star"></i> Studio Beauty — Horizonte, MG</div>
       <h1 class="hero-title">Beleza que <em>transforma</em> o seu dia</h1>
       <p class="hero-desc">Cabelo, unhas, sobrancelhas e muito mais. Agende online e venha se cuidar!</p>
       <div class="hero-actions">
@@ -950,14 +950,14 @@
             <div class="contact-item-icon"><i class="fa-solid fa-location-dot"></i></div>
             <div class="contact-item-text">
               <h4>Endereço</h4>
-              <p>Rua João Gualberto Costa, 198<br>Bairro Vila Santa Luzia — Horizonte, MG</p>
+              <p id="contactAddress">Rua João Gualberto Costa, 198<br>Bairro Vila Santa Luzia — Horizonte, MG</p>
             </div>
           </div>
           <div class="contact-item">
             <div class="contact-item-icon"><i class="fa-solid fa-clock"></i></div>
             <div class="contact-item-text">
               <h4>Horário</h4>
-              <p>Seg–Sex: 9h30 às 18h00<br>Sábado: 7h30 às 18h00</p>
+              <p id="contactHours">Seg–Sex: 9h30 às 18h00<br>Sábado: 7h30 às 18h00</p>
             </div>
           </div>
           <div class="contact-item">
@@ -1041,50 +1041,12 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   /* ======================================
-     DATA
+     DATA — carregado dinamicamente via /config
   ====================================== */
-  const SERVICES = [
-    { id:1,  name:"Mechas/Luzes",                               price:"A partir de R$ 150,00", duration:300, icon:"fa-solid fa-wand-magic-sparkles", cat:"hair" },
-    { id:2,  name:"Hidratação",                                  price:"A partir de R$ 90,00",  duration:60,  icon:"fa-solid fa-droplet",             cat:"hair" },
-    { id:3,  name:"Hidratação com Ozônio",                       price:"R$ 130,00",             duration:75,  icon:"fa-solid fa-droplet",             cat:"hair" },
-    { id:4,  name:"Escova",                                      price:"A partir de R$ 30,00",  duration:45,  icon:"fa-solid fa-wind",                cat:"hair" },
-    { id:5,  name:"Queratinização ou Cauterização com Escova",   price:"A partir de R$ 130,00", duration:90,  icon:"fa-solid fa-wind",                cat:"hair" },
-    { id:6,  name:"Progressiva (com ou sem formol)",             price:"A partir de R$ 130,00", duration:180, icon:"fa-solid fa-star",                cat:"hair" },
-    { id:7,  name:"Pé e Mão",                                    price:"R$ 50,00",              duration:60,  icon:"fa-solid fa-hand-sparkles",       cat:"nail" },
-    { id:8,  name:"Só Pé ou Mão",                               price:"R$ 30,00",              duration:30,  icon:"fa-solid fa-hand-sparkles",       cat:"nail" },
-    { id:9,  name:"Esmaltação em Gel",                           price:"R$ 85,00",              duration:75,  icon:"fa-solid fa-paintbrush",          cat:"nail" },
-    { id:10, name:"Alongamento de Unha molde F1",                price:"R$ 130,00",             duration:150, icon:"fa-solid fa-paintbrush",          cat:"nail" },
-    { id:11, name:"Manutenção",                                  price:"R$ 85,00",              duration:90,  icon:"fa-solid fa-paintbrush",          cat:"nail" },
-    { id:12, name:"Design de Sobrancelhas",                      price:"R$ 35,00",              duration:30,  icon:"fa-solid fa-eye",                 cat:"brow" },
-    { id:13, name:"Design com Henna",                            price:"R$ 55,00",              duration:60,  icon:"fa-solid fa-eye",                 cat:"brow" },
-    { id:14, name:"Micropigmentação",                            price:"R$ 300,00",             duration:180, icon:"fa-solid fa-eye",                 cat:"brow" },
-    { id:15, name:"Retoque de Micropigmentação",                 price:"A confirmar",            duration:90,  icon:"fa-solid fa-eye",                 cat:"brow" },
-    { id:16, name:"Spa dos Pés",                                 price:"R$ 85,00",              duration:75,  icon:"fa-solid fa-spa",                 cat:"foot" },
-  ];
-
-  const COMBOS = [
-    { id:101, name:"Buço + Pedicure + Manicure",                              price:"R$ 65,00",  duration:75  },
-    { id:102, name:"Design com Henna + Corte + Manicure",                     price:"R$ 99,90",  duration:135 },
-    { id:103, name:"Micropigmentação + Retoque",                               price:"R$ 250,00", duration:270 },
-    { id:104, name:"Pedicure + Buço + Design com Henna",                      price:"R$ 85,00",  duration:105 },
-    { id:105, name:"Blindagem de Gel + Cutilagem",                             price:"R$ 75,00",  duration:80  },
-    { id:106, name:"Spa dos Pés + Pedicure",                                   price:"R$ 70,00",  duration:105 },
-    { id:107, name:"Botox Capilar + Pedicure + Design",                        price:"R$ 145,00", duration:180 },
-    { id:108, name:"Cristalização Térmica + Pedicure + Buço",                  price:"R$ 85,00",  duration:135 },
-    { id:109, name:"Hidratação + Escova + Pedicure",                           price:"R$ 85,00",  duration:135 },
-    { id:110, name:"Progressiva sem Formol + Hidratação + Brinde Pedicure",    price:"R$ 200,00", duration:270 },
-  ];
-
-  /* Operating hours: key = JS day (0=Sun, 1=Mon, ..., 6=Sat) */
-  const OPENING = {
-    1: { open: '09:30', close: '18:00' },
-    2: { open: '09:30', close: '18:00' },
-    3: { open: '09:30', close: '18:00' },
-    4: { open: '09:30', close: '18:00' },
-    5: { open: '09:30', close: '18:00' },
-    6: { open: '07:30', close: '18:00' },
-    0: null
-  };
+  let SERVICES = [];
+  let COMBOS   = [];
+  let OPENING  = {};
+  let SALON_ID = null;
 
   const BREAK     = 10;  // minutos de intervalo entre atendimentos
   const SLOT_STEP = 15;  // granularidade dos horários (min)
@@ -1144,11 +1106,9 @@
     const closeMin = toMinutes(hours.close);
 
     // Busca agendamentos existentes para a data no Supabase
-    const { data: bookings } = await db
-      .from('agendamentos')
-      .select('time, duration')
-      .eq('date', dateStr)
-      .eq('cancelled', false);
+    let slotQuery = db.from('agendamentos').select('time, duration').eq('date', dateStr).eq('cancelled', false);
+    if (SALON_ID) slotQuery = slotQuery.eq('salao_id', SALON_ID);
+    const { data: bookings } = await slotQuery;
 
     const existing = bookings || [];
     const slots    = [];
@@ -1383,7 +1343,8 @@
       duration: state.service.duration,
       service:  state.service.name,
       price:    state.service.price,
-      user_id:  currentUser.id
+      user_id:  currentUser.id,
+      salao_id: SALON_ID
     }]);
 
     btn.disabled  = false;
@@ -1408,7 +1369,8 @@
           date:     state.date,
           time:     state.time,
           duration: state.service.duration,
-          price:    state.service.price
+          price:    state.service.price,
+          salao_id: SALON_ID
         })
       }).catch(err => console.warn('Email não enviado:', err));
     }
@@ -1776,10 +1738,9 @@
     const body = document.getElementById('myPanelBody');
     body.innerHTML = '<div class="my-panel-empty"><i class="fa-solid fa-spinner fa-spin" style="font-size:1.8rem;"></i></div>';
 
-    const { data: bookings } = await db
-      .from('agendamentos')
-      .select('*')
-      .eq('user_id', currentUser.id)
+    let query = db.from('agendamentos').select('*').eq('user_id', currentUser.id);
+    if (SALON_ID) query = query.eq('salao_id', SALON_ID);
+    const { data: bookings } = await query
       .order('date', { ascending: true })
       .order('time', { ascending: true });
 
@@ -1892,10 +1853,87 @@
 
 
   /* ======================================
-     INIT
+     INIT — carrega config do salão e renderiza
   ====================================== */
-  renderServices();
-  renderCombos();
+  async function initSalon() {
+    try {
+      const r    = await fetch('/config');
+      const json = await r.json();
+      if (!r.ok) { console.error('Erro ao carregar config:', json.error); return; }
+
+      const { salao, servicos, combos } = json;
+      SALON_ID = salao.id;
+
+      // Mapeia campos do banco para o formato esperado pelo JS
+      SERVICES = servicos.map(s => ({
+        id:       s.id,
+        name:     s.nome,
+        price:    s.preco,
+        duration: s.duracao,
+        icon:     s.icone,
+        cat:      s.categoria
+      }));
+
+      COMBOS = combos.map(c => ({
+        id:       c.id,
+        name:     c.nome,
+        price:    c.preco,
+        duration: c.duracao
+      }));
+
+      // Converte horários do banco (chaves string "1","2"...) para inteiros
+      OPENING = {};
+      for (const [k, v] of Object.entries(salao.horarios || {})) {
+        OPENING[parseInt(k)] = v;
+      }
+
+      // Aplica cor primária do salão
+      if (salao.cor_primaria) {
+        document.documentElement.style.setProperty('--rose', salao.cor_primaria);
+      }
+
+      // Atualiza título da página
+      document.title = salao.nome;
+
+      // Atualiza badge do hero
+      const badge = document.getElementById('heroBadge');
+      if (badge) badge.innerHTML = `<i class="fa-solid fa-star"></i> ${salao.nome} — ${salao.cidade}`;
+
+      // Atualiza todos os links de WhatsApp
+      const waUrl = `https://wa.me/${salao.whatsapp}`;
+      document.querySelectorAll('a[href*="wa.me"]').forEach(a => a.href = waUrl);
+
+      // Atualiza link do Instagram
+      if (salao.instagram) {
+        document.querySelectorAll('a[href*="instagram"]').forEach(a => {
+          a.href = `https://www.instagram.com/${salao.instagram}`;
+        });
+      }
+
+      // Atualiza endereço e horários no contato
+      const addrEl = document.getElementById('contactAddress');
+      if (addrEl && salao.endereco) {
+        addrEl.innerHTML = `${salao.endereco}<br>${salao.bairro} — ${salao.cidade}`;
+      }
+
+      const hoursEl = document.getElementById('contactHours');
+      if (hoursEl) {
+        const seg = OPENING[1], sab = OPENING[6];
+        let hoursHtml = '';
+        if (seg) hoursHtml += `Seg–Sex: ${seg.open} às ${seg.close}`;
+        if (sab) hoursHtml += `<br>Sábado: ${sab.open} às ${sab.close}`;
+        if (hoursHtml) hoursEl.innerHTML = hoursHtml;
+      }
+
+    } catch (e) {
+      console.error('initSalon error:', e);
+    }
+
+    renderServices();
+    renderCombos();
+  }
+
+  initSalon();
   renderAuthArea(null);
 </script>
 </body>

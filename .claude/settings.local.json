@@ -5,7 +5,13 @@
       "Bash(node server.js)",
       "Bash(curl -s \"http://localhost:3000/config?salao=barbearia-bh\")",
       "Bash(node -e \"const d=require\\('fs'\\).readFileSync\\('/dev/stdin','utf8'\\); const j=JSON.parse\\(d\\); console.log\\('Salão:', j.salao?.nome\\); console.log\\('Serviços:', j.servicos?.length\\); console.log\\('Combos:', j.combos?.length\\);\")",
-      "Bash(taskkill /F /IM node.exe)"
+      "Bash(taskkill /F /IM node.exe)",
+      "Bash(npm install *)",
+      "Bash(node -e ' *)",
+      "Bash(netstat -ano)",
+      "Bash(findstr :3000)",
+      "Bash(taskkill /F /PID 12460)",
+      "Bash(cmd /c \"taskkill /F /PID 12460\")"
     ]
   }
 }

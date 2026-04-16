@@ -1,4 +1,4 @@
-# Studio Beauty — Irineia
+# Studio Beauty
 
 Coloque aqui os arquivos específicos deste salão:
 - logo.png — logo do salão

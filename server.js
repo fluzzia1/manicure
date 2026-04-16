@@ -7,11 +7,11 @@ const PORT    = process.env.PORT || 3000;
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://ddithxstvpgwkqckljze.supabase.co';
 
-app.use(express.static(__dirname, { index: false }));
 app.use(express.json());
 
 /* ============================================================
    ROOT ROUTE — serve HTML correto conforme tipo do salão
+   (deve ficar ANTES do express.static)
 ============================================================ */
 app.get('/', async (req, res) => {
   try {
@@ -20,11 +20,13 @@ app.get('/', async (req, res) => {
       const { data } = await supaFetch('GET', `saloes?slug=eq.${encodeURIComponent(slug)}&select=tipo`);
       if (data?.[0]?.tipo === 'barbearia') return res.sendFile(path.join(__dirname, 'barbearia.html'));
     }
-    res.sendFile(path.join(__dirname, 'index.html'));
-  } catch {
-    res.sendFile(path.join(__dirname, 'index.html'));
+  } catch (e) {
+    console.error('Root route error:', e.message);
   }
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
+
+app.use(express.static(__dirname));
 
 /* ============================================================
    SUPABASE SERVICE ROLE HELPER

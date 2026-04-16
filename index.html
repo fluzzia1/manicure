@@ -1895,6 +1895,14 @@
       // Atualiza título da página
       document.title = salao.nome;
 
+      // Atualiza textos do hero
+      if (salao.hero_titulo) {
+        document.querySelector('.hero-title').innerHTML = salao.hero_titulo;
+      }
+      if (salao.hero_desc) {
+        document.querySelector('.hero-desc').textContent = salao.hero_desc;
+      }
+
       // Atualiza badge do hero
       const badge = document.getElementById('heroBadge');
       if (badge) badge.innerHTML = `<i class="fa-solid fa-star"></i> ${salao.nome} — ${salao.cidade}`;

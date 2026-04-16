@@ -57,7 +57,7 @@ app.get('/config', async (req, res) => {
     }
 
     const { data: saloes } = await supaFetch('GET',
-      `saloes?slug=eq.${encodeURIComponent(slug)}&select=id,slug,nome,cor_primaria,whatsapp,instagram,endereco,bairro,cidade,horarios,email_from`
+      `saloes?slug=eq.${encodeURIComponent(slug)}&select=id,slug,nome,cor_primaria,whatsapp,instagram,endereco,bairro,cidade,horarios,email_from,hero_titulo,hero_desc`
     );
     if (!saloes?.length) return res.status(404).json({ error: 'Salão não encontrado.' });
     const salao = saloes[0];

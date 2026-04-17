@@ -1594,7 +1594,7 @@
     input.value = '';
     document.getElementById('rescheduleSlots').innerHTML = '';
     document.getElementById('rescheduleOverlay').classList.add('open');
-    input.addEventListener('change', loadRescheduleSlots);
+    input.onchange = loadRescheduleSlots;
   }
 
   function closeReschedule() { document.getElementById('rescheduleOverlay').classList.remove('open'); }
@@ -1621,12 +1621,14 @@
     const dateVal = document.getElementById('rescheduleDate').value;
     const errEl   = document.getElementById('rescheduleError');
     if (!dateVal || !rescheduleTime) { showAlert(errEl, 'Selecione data e horário.'); return; }
-    await fetch(`/admin/booking/${rescheduleId}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', 'x-admin-token': '' },
-      body: JSON.stringify({ date: dateVal, time: rescheduleTime })
-    });
-    await db.from('agendamentos').update({ date: dateVal, time: rescheduleTime }).eq('id', rescheduleId);
+    const btn = document.getElementById('btnConfirmReschedule');
+    btn.disabled = true; btn.textContent = 'Salvando...';
+    const { error } = await db.from('agendamentos')
+      .update({ date: dateVal, time: rescheduleTime })
+      .eq('id', rescheduleId)
+      .eq('user_id', currentUser.id);
+    btn.disabled = false; btn.textContent = 'Confirmar';
+    if (error) { showAlert(errEl, 'Erro ao remarcar. Tente novamente.'); return; }
     closeReschedule();
     await loadMyBookings();
   });

@@ -631,12 +631,21 @@ function doLogout()   { sessionStorage.removeItem(TOKEN_KEY); location.reload();
 
 /* ============================================================
    BOOKINGS — via servidor (filtrado por salao_id da sessão)
+   Cache de 30s para evitar múltiplas requisições por render
 ============================================================ */
+let _bookingsCache = null;
+let _bookingsCacheTs = 0;
+
 async function loadBookings() {
+  if (_bookingsCache && Date.now() - _bookingsCacheTs < 30000) return _bookingsCache;
   const r = await fetch('/admin/bookings', { headers: { 'x-admin-token': adminToken() } });
   if (!r.ok) return [];
-  return await r.json();
+  _bookingsCache = await r.json();
+  _bookingsCacheTs = Date.now();
+  return _bookingsCache;
 }
+
+function clearBookingsCache() { _bookingsCache = null; }
 
 /* ============================================================
    UTILS
@@ -864,18 +873,21 @@ function escHtml(s) {
 
 async function markDone(id) {
   await adminFetch('PATCH', `/admin/booking/${id}`, { done: true });
+  clearBookingsCache();
   renderBookingsTable(); renderStats(); renderTodayTimeline(); renderUpcomingTimeline();
 }
 
 async function cancelBooking(id) {
   if (!confirm('Cancelar este agendamento?')) return;
   await adminFetch('PATCH', `/admin/booking/${id}`, { cancelled: true });
+  clearBookingsCache();
   renderBookingsTable(); renderStats(); renderTodayTimeline(); renderUpcomingTimeline();
 }
 
 async function deleteBooking(id) {
   if (!confirm('Excluir permanentemente este agendamento? Isso não pode ser desfeito.')) return;
   await adminFetch('DELETE', `/admin/booking/${id}`);
+  clearBookingsCache();
   renderBookingsTable(); renderStats(); renderTodayTimeline(); renderUpcomingTimeline();
 }
 
@@ -972,6 +984,7 @@ document.getElementById('btnSaveBooking').addEventListener('click', async ()=>{
     msgEl.classList.add('error'); return;
   }
   closeModal();
+  clearBookingsCache();
   renderBookingsTable(); renderStats(); renderTodayTimeline(); renderUpcomingTimeline();
   ['mName','mPhone','mDate','mTime'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('mService').value='';

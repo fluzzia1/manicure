@@ -772,23 +772,10 @@
     </div>
     <div class="hero-card">
       <div class="hero-card-title"><i class="fa-solid fa-clock"></i> Horários de Funcionamento</div>
-      <div class="hours-list">
+      <div class="hours-list" id="heroHoursList">
         <div class="hours-item">
-          <span class="hours-day">Segunda a Sexta</span>
-          <span class="hours-badge">9h30 – 18h00</span>
+          <span class="hours-day">Carregando…</span>
         </div>
-        <div class="hours-item">
-          <span class="hours-day">Sábado</span>
-          <span class="hours-badge">7h30 – 18h00</span>
-        </div>
-        <div class="hours-item">
-          <span class="hours-day">Domingo</span>
-          <span class="hours-badge closed">Fechado</span>
-        </div>
-      </div>
-      <div style="margin-top:1.4rem; padding:1rem; background:var(--rose-light); border-radius:var(--radius); text-align:center;">
-        <p style="font-size:.8rem; color:var(--rose); font-weight:600; margin-bottom:.3rem;"><i class="fa-solid fa-gift"></i> Combos Especiais</p>
-        <p style="font-size:.78rem; color:var(--text-muted);">Segunda, Terça e Quarta-feira</p>
       </div>
     </div>
   </div>
@@ -1194,7 +1181,7 @@
     if (!val) { showAlert(alertEl, 'Por favor, selecione uma data.'); return; }
 
     const dow = getDayOfWeek(val);
-    if (dow === 0) { showAlert(alertEl, 'Domingo não temos atendimento. Escolha outra data.'); return; }
+    if (!OPENING[dow]) { showAlert(alertEl, 'Não atendemos neste dia. Escolha outra data.'); return; }
 
     // Validate not in the past
     const [y, mo, d] = val.split('-').map(Number);
@@ -1844,7 +1831,7 @@
     const btn = document.getElementById('btnConfirmReschedule');
     btn.disabled = true; btn.textContent = 'Salvando...';
 
-    await db.from('agendamentos').update({ date, time: rescheduleSelectedTime }).eq('id', id);
+    await db.from('agendamentos').update({ date, time: rescheduleSelectedTime }).eq('id', id).eq('user_id', currentUser.id);
 
     btn.disabled = false; btn.textContent = 'Confirmar';
     closeReschedule();
@@ -1931,6 +1918,21 @@
         if (seg) hoursHtml += `Seg–Sex: ${seg.open} às ${seg.close}`;
         if (sab) hoursHtml += `<br>Sábado: ${sab.open} às ${sab.close}`;
         if (hoursHtml) hoursEl.innerHTML = hoursHtml;
+      }
+
+      // Hero card de horários
+      const heroHoursList = document.getElementById('heroHoursList');
+      if (heroHoursList) {
+        const DAY_NAMES = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+        const rows = [];
+        // Seg–Sex agrupado se todos iguais
+        const seg = OPENING[1];
+        if (seg) rows.push(`<div class="hours-item"><span class="hours-day">Segunda a Sexta</span><span class="hours-badge">${seg.open} – ${seg.close}</span></div>`);
+        const sab = OPENING[6];
+        if (sab)  rows.push(`<div class="hours-item"><span class="hours-day">Sábado</span><span class="hours-badge">${sab.open} – ${sab.close}</span></div>`);
+        const dom = OPENING[0];
+        rows.push(`<div class="hours-item"><span class="hours-day">Domingo</span><span class="hours-badge ${dom ? '' : 'closed'}">${dom ? `${dom.open} – ${dom.close}` : 'Fechado'}</span></div>`);
+        heroHoursList.innerHTML = rows.join('');
       }
 
     } catch (e) {

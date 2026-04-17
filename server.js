@@ -13,12 +13,20 @@ app.use(express.json());
    ROOT ROUTE — serve HTML correto conforme tipo do salão
    (deve ficar ANTES do express.static)
 ============================================================ */
+/* mapa tipo → arquivo HTML (adicione novos tipos aqui) */
+const TIPO_HTML = {
+  barbearia: 'barbearia.html',
+  salao:     'index.html',
+};
+
 app.get('/', async (req, res) => {
   try {
     const slug = resolveSlug(req);
     if (slug) {
       const { data } = await supaFetch('GET', `saloes?slug=eq.${encodeURIComponent(slug)}&select=tipo`);
-      if (data?.[0]?.tipo === 'barbearia') return res.sendFile(path.join(__dirname, 'barbearia.html'));
+      const tipo = data?.[0]?.tipo;
+      const file = TIPO_HTML[tipo];
+      if (file) return res.sendFile(path.join(__dirname, file));
     }
   } catch (e) {
     console.error('Root route error:', e.message);
@@ -119,28 +127,17 @@ app.post('/admin/auth', async (req, res) => {
     const { username, password } = req.body;
     const slug = resolveSlug(req);
 
-    if (slug) {
-      const { data: saloes } = await supaFetch('GET',
-        `saloes?slug=eq.${encodeURIComponent(slug)}&select=id,admin_user,admin_pass`
-      );
-      const salao = saloes?.[0];
-      if (!salao || username !== salao.admin_user || password !== salao.admin_pass) {
-        return res.status(401).json({ error: 'Credenciais inválidas.' });
-      }
-      const token = crypto.randomBytes(32).toString('hex');
-      adminSessions.set(token, { expiry: Date.now() + 8 * 60 * 60 * 1000, salao_id: salao.id });
-      return res.json({ token });
-    }
+    if (!slug) return res.status(400).json({ error: 'Salão não identificado.' });
 
-    // Fallback: variáveis de ambiente (compatibilidade)
-    const validUser = process.env.ADMIN_USERNAME || 'irineia';
-    const validPass = process.env.ADMIN_PASSWORD || '12345';
-    if (username !== validUser || password !== validPass) {
+    const { data: saloes } = await supaFetch('GET',
+      `saloes?slug=eq.${encodeURIComponent(slug)}&select=id,admin_user,admin_pass`
+    );
+    const salao = saloes?.[0];
+    if (!salao || username !== salao.admin_user || password !== salao.admin_pass) {
       return res.status(401).json({ error: 'Credenciais inválidas.' });
     }
-    const { data: saloes } = await supaFetch('GET', `saloes?admin_user=eq.${encodeURIComponent(validUser)}&select=id`);
     const token = crypto.randomBytes(32).toString('hex');
-    adminSessions.set(token, { expiry: Date.now() + 8 * 60 * 60 * 1000, salao_id: saloes?.[0]?.id || null });
+    adminSessions.set(token, { expiry: Date.now() + 8 * 60 * 60 * 1000, salao_id: salao.id });
     res.json({ token });
   } catch (e) {
     res.status(500).json({ error: e.message });

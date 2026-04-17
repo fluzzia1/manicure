@@ -1249,10 +1249,13 @@
     let q = db.from('agendamentos').select('time,duration').eq('date', dateStr).eq('cancelled', false);
     if (SALON_ID) q = q.eq('salao_id', SALON_ID);
     const { data: existing } = await q;
+    const todayStr = new Date().toISOString().split('T')[0];
+    const isToday  = dateStr === todayStr;
+    const nowMin   = isToday ? new Date().getHours() * 60 + new Date().getMinutes() + 30 : -1;
     const slots = [];
     let start = openMin;
     while (start + duration <= closeMin) {
-      const busy = (existing||[]).some(b => {
+      const busy = (isToday && start < nowMin) ? true : (existing||[]).some(b => {
         const bs = toMinutes((b.time||'').substring(0,5));
         const be = bs + b.duration + BREAK;
         return start < be && (start + duration + BREAK) > bs;

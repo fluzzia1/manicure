@@ -1101,8 +1101,12 @@
     const slots    = [];
     let slotStart  = openMin;
 
+    const todayStr = new Date().toISOString().split('T')[0];
+    const isToday  = dateStr === todayStr;
+    const nowMin   = isToday ? new Date().getHours() * 60 + new Date().getMinutes() + 30 : -1;
+
     while (slotStart + serviceDuration <= closeMin) {
-      const overlap = existing.some(b => {
+      const overlap = isToday && slotStart < nowMin ? true : existing.some(b => {
         const bStart = toMinutes((b.time || '').substring(0, 5));
         const bEnd   = bStart + b.duration + BREAK;
         return slotStart < bEnd && (slotStart + serviceDuration + BREAK) > bStart;

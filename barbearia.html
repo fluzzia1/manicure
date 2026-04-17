@@ -163,22 +163,55 @@
       margin-bottom: 2.8rem;
     }
 
+    .hero-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .9rem;
+    }
+
     .btn-hero {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: .6rem;
       background: var(--gold);
       color: #000;
       font-family: 'Oswald', sans-serif;
-      font-size: .9rem;
-      font-weight: 600;
-      letter-spacing: 2px;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 3px;
       text-transform: uppercase;
-      padding: .9rem 2.8rem;
+      padding: 1rem 3.2rem;
       border-radius: var(--radius);
       border: none;
       cursor: pointer;
-      transition: background .2s, transform .15s;
+      transition: background .2s, transform .15s, box-shadow .2s;
+      box-shadow: 0 4px 24px rgba(196,162,90,.35);
+      min-width: 240px;
+      justify-content: center;
     }
-    .btn-hero:hover { background: var(--gold-dark); transform: translateY(-2px); }
+    .btn-hero:hover { background: var(--gold-dark); transform: translateY(-3px); box-shadow: 0 8px 32px rgba(196,162,90,.5); }
+
+    .btn-hero-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: .6rem;
+      background: transparent;
+      color: rgba(255,255,255,.75);
+      font-family: 'Oswald', sans-serif;
+      font-size: .82rem;
+      font-weight: 400;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: .65rem 2rem;
+      border-radius: var(--radius);
+      border: 1px solid rgba(255,255,255,.2);
+      cursor: pointer;
+      transition: border-color .2s, color .2s;
+      min-width: 240px;
+      justify-content: center;
+    }
+    .btn-hero-outline:hover { border-color: var(--gold); color: var(--gold); }
 
     /* ===== SECTION HEADER ===== */
     .section-header {
@@ -792,7 +825,14 @@
     <div class="hero-icon"><i class="fa-solid fa-scissors"></i></div>
     <h1 class="hero-title" id="heroTitle">BARBEARIA<br><span style="color:var(--white)">BH</span></h1>
     <p class="hero-sub" id="heroSub">Estilo com Precisão</p>
-    <a href="#agendamento" class="btn-hero">&#128197; Agendar Agora</a>
+    <div class="hero-actions">
+      <a href="#agendamento" class="btn-hero">
+        <i class="fa-solid fa-calendar-check"></i> Agendar Agora
+      </a>
+      <button class="btn-hero-outline" onclick="currentUser ? openMyPanel() : openAuthModal()">
+        <i class="fa-regular fa-calendar"></i> Meus Agendamentos
+      </button>
+    </div>
   </div>
 </section>
 

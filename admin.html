@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin — Studio Beauty</title>
+  <title>Admin — Painel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
@@ -376,7 +376,7 @@
 <div id="loginScreen">
   <div class="login-card">
     <div class="login-logo"><i class="fa-solid fa-scissors"></i></div>
-    <h2>Studio Beauty</h2>
+    <h2 id="loginSalonName">Carregando…</h2>
     <p>Painel Administrativo — acesso restrito</p>
     <input class="login-input" type="text" id="loginUser" placeholder="Usuário" autocomplete="username"/>
     <input class="login-input" type="password" id="loginPass" placeholder="Senha" autocomplete="current-password"/>
@@ -394,7 +394,7 @@
     <div class="sidebar-header">
       <div class="sidebar-logo-icon"><i class="fa-solid fa-scissors"></i></div>
       <div class="sidebar-logo-text">
-        <h3>Studio Beauty</h3>
+        <h3 id="sidebarSalonName">Carregando…</h3>
         <span>Admin</span>
       </div>
     </div>
@@ -406,7 +406,7 @@
       <div class="nav-item" data-view="faturamento"><i class="fa-solid fa-dollar-sign"></i> Faturamento</div>
       <div class="nav-label" style="margin-top:.6rem;">Sistema</div>
       <div class="nav-item" data-view="configuracoes"><i class="fa-solid fa-gear"></i> Configurações</div>
-      <a class="nav-item" href="index.html" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Site</a>
+      <a class="nav-item" href="/" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Site</a>
     </nav>
     <div class="sidebar-footer">
       <div class="sidebar-user">
@@ -430,7 +430,7 @@
       </div>
       <div class="topbar-right">
         <span class="topbar-date" id="topbarDate"></span>
-        <a href="index.html" target="_blank" class="btn-site"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Site</a>
+        <a href="/" target="_blank" class="btn-site"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Site</a>
       </div>
     </div>
 
@@ -556,14 +556,10 @@
 
             <div class="settings-section">
               <h3>Alterar Senha</h3>
-              <p>Recomendamos trocar a senha padrão assim que possível.</p>
-              <div class="form-group">
-                <label>Senha atual</label>
-                <input class="form-input" type="password" id="currPass" placeholder="Senha atual"/>
-              </div>
+              <p>Nova senha para o login deste painel.</p>
               <div class="form-group">
                 <label>Nova senha</label>
-                <input class="form-input" type="password" id="newPass" placeholder="Nova senha (mín. 6 caracteres)"/>
+                <input class="form-input" type="password" id="newPass" placeholder="Nova senha (mín. 4 caracteres)"/>
               </div>
               <div class="form-group">
                 <label>Confirmar nova senha</label>
@@ -580,7 +576,7 @@
               <p>Nome de usuário para o login do painel.</p>
               <div class="form-group">
                 <label>Novo usuário</label>
-                <input class="form-input" type="text" id="newUsername" placeholder="ex: irineia"/>
+                <input class="form-input" type="text" id="newUsername" placeholder="ex: admin"/>
               </div>
               <button class="btn-primary" id="btnChangeUser">Salvar Usuário</button>
               <div class="alert-msg" id="userMsg"></div>
@@ -620,86 +616,24 @@
   </div>
 </div>
 
-<!-- ===== SUPABASE + JAVASCRIPT ===== -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- ===== JAVASCRIPT ===== -->
 <script>
 /* ============================================================
-   CONSTANTS & DATA
+   CONSTANTS
 ============================================================ */
-const AUTH_KEY    = 'fluzzia_admin_auth';
-const SESSION_KEY = 'fluzzia_admin_session';
+const TOKEN_KEY = 'fluzzia_admin_token';
+
+let SALON_CONFIG = null; // { salao, servicos, combos }
+
+function adminToken() { return sessionStorage.getItem(TOKEN_KEY) || ''; }
+function isLoggedIn() { return !!adminToken(); }
+function doLogout()   { sessionStorage.removeItem(TOKEN_KEY); location.reload(); }
 
 /* ============================================================
-   SUPABASE — preencha com seus dados
-   supabase.com → seu projeto → Settings → API
-============================================================ */
-const SUPABASE_URL  = 'https://ddithxstvpgwkqckljze.supabase.co';
-const SUPABASE_ANON = 'sb_publishable_HE13nXwAKYzqYmmbYdgVHA_Z-ujiiR7';
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-
-const SERVICES_LIST = [
-  { name:"Mechas/Luzes",                             price:"A partir de R$ 150,00", duration:300 },
-  { name:"Hidratação",                                price:"A partir de R$ 90,00",  duration:60  },
-  { name:"Hidratação com Ozônio",                    price:"R$ 130,00",             duration:75  },
-  { name:"Escova",                                   price:"A partir de R$ 30,00",  duration:45  },
-  { name:"Queratinização ou Cauterização com Escova",price:"A partir de R$ 130,00", duration:90  },
-  { name:"Progressiva (com ou sem formol)",          price:"A partir de R$ 130,00", duration:180 },
-  { name:"Pé e Mão",                                 price:"R$ 50,00",              duration:60  },
-  { name:"Só Pé ou Mão",                            price:"R$ 30,00",              duration:30  },
-  { name:"Esmaltação em Gel",                        price:"R$ 85,00",              duration:75  },
-  { name:"Alongamento de Unha molde F1",             price:"R$ 130,00",             duration:150 },
-  { name:"Manutenção",                               price:"R$ 85,00",              duration:90  },
-  { name:"Design de Sobrancelhas",                   price:"R$ 35,00",              duration:30  },
-  { name:"Design com Henna",                         price:"R$ 55,00",              duration:60  },
-  { name:"Micropigmentação",                         price:"R$ 300,00",             duration:180 },
-  { name:"Retoque de Micropigmentação",              price:"A confirmar",            duration:90  },
-  { name:"Spa dos Pés",                              price:"R$ 85,00",              duration:75  },
-  { name:"Combo 1 — Buço + Pedicure + Manicure",                          price:"R$ 65,00",  duration:75  },
-  { name:"Combo 2 — Design com Henna + Corte + Manicure",                 price:"R$ 99,90",  duration:135 },
-  { name:"Combo 3 — Micropigmentação + Retoque",                          price:"R$ 250,00", duration:270 },
-  { name:"Combo 4 — Pedicure + Buço + Design com Henna",                  price:"R$ 85,00",  duration:105 },
-  { name:"Combo 5 — Blindagem de Gel + Cutilagem",                        price:"R$ 75,00",  duration:80  },
-  { name:"Combo 6 — Spa dos Pés + Pedicure",                              price:"R$ 70,00",  duration:105 },
-  { name:"Combo 7 — Botox Capilar + Pedicure + Design",                   price:"R$ 145,00", duration:180 },
-  { name:"Combo 8 — Cristalização Térmica + Pedicure + Buço",             price:"R$ 85,00",  duration:135 },
-  { name:"Combo 9 — Hidratação + Escova + Pedicure",                      price:"R$ 85,00",  duration:135 },
-  { name:"Combo 10 — Progressiva sem Formol + Hidratação + Brinde Pedicure", price:"R$ 200,00", duration:270 },
-];
-
-/* ============================================================
-   AUTH — senhas armazenadas apenas como hash SHA-256
-============================================================ */
-async function sha256(str) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-
-async function initAuth() {
-  if (localStorage.getItem(AUTH_KEY)) return;
-  // Credenciais padrão representadas como arrays de char-codes — sem texto puro no fonte
-  const u = [105,114,105,110,101,105,97].map(c=>String.fromCharCode(c)).join('');
-  const p = [49,50,51,52,53].map(c=>String.fromCharCode(c)).join('');
-  localStorage.setItem(AUTH_KEY, JSON.stringify({
-    userHash:    await sha256(u),
-    passHash:    await sha256(p),
-    displayName: u
-  }));
-}
-
-function getAuth() {
-  try { return JSON.parse(localStorage.getItem(AUTH_KEY)); }
-  catch { return null; }
-}
-
-function isLoggedIn() { return sessionStorage.getItem(SESSION_KEY) === '1'; }
-function doLogout()   { sessionStorage.removeItem(SESSION_KEY); location.reload(); }
-
-/* ============================================================
-   BOOKINGS — Supabase
+   BOOKINGS — via servidor (filtrado por salao_id da sessão)
 ============================================================ */
 async function loadBookings() {
-  const token = sessionStorage.getItem(SESSION_KEY);
-  const r = await fetch('/admin/bookings', { headers: { 'x-admin-token': token } });
+  const r = await fetch('/admin/bookings', { headers: { 'x-admin-token': adminToken() } });
   if (!r.ok) return [];
   return await r.json();
 }
@@ -950,28 +884,15 @@ async function deleteBooking(id) {
 ============================================================ */
 async function renderClients() {
   const query = (document.getElementById('filterClient').value||'').toLowerCase();
-  const [bookings, profilesRes] = await Promise.all([
-    loadBookings(),
-    db.from('profiles').select('*')
-  ]);
-  const profiles = profilesRes.data || [];
+  const bookings = await loadBookings();
 
-  // Build unique clients map — merge bookings + profiles
+  // Build unique clients map from bookings
   const map = {};
-
-  // 1. Clients from bookings
   bookings.forEach(b=>{
     const key = b.phone||b.name;
-    if (!map[key]) map[key] = { name:b.name, phone:b.phone, bookings:[], firstDate:b.date, registered:false };
+    if (!map[key]) map[key] = { name:b.name, phone:b.phone, bookings:[], firstDate:b.date };
     map[key].bookings.push(b);
     if (b.date < map[key].firstDate) map[key].firstDate = b.date;
-  });
-
-  // 2. Registered profiles (may not have bookings yet)
-  profiles.forEach(p=>{
-    const key = p.phone||p.email;
-    if (!map[key]) map[key] = { name:p.name, phone:p.phone, email:p.email, bookings:[], firstDate:null, registered:true };
-    else map[key].registered = true;
   });
 
   let clients = Object.values(map);
@@ -994,14 +915,13 @@ async function renderClients() {
       <div class="client-card">
         <div class="client-avatar" style="background:${color};">${initials(c.name)}</div>
         <div class="client-info">
-          <h4>${escHtml(c.name)} ${c.registered ? '<span style="font-size:.65rem;background:#EAF0FB;color:#4A7BC9;padding:1px 7px;border-radius:50px;font-weight:600;">Cadastrado</span>' : ''}</h4>
+          <h4>${escHtml(c.name)}</h4>
           <p class="client-phone"><a href="https://wa.me/55${digits}" target="_blank">${escHtml(c.phone||'—')}</a></p>
-          ${c.email ? `<p style="font-size:.73rem;color:var(--muted);">${escHtml(c.email)}</p>` : ''}
           <div class="client-stats">
             <span class="client-stat">Visitas: <strong>${c.bookings.length}</strong></span>
             ${last ? `<span class="client-stat">Último: <strong>${formatDateBR(last.date)}</strong></span>` : ''}
           </div>
-          ${last ? `<p style="font-size:.73rem;color:var(--muted);margin-top:.3rem;">Últ. serviço: ${escHtml(last.service)}</p>` : '<p style="font-size:.73rem;color:var(--muted);margin-top:.3rem;">Nenhum agendamento ainda</p>'}
+          ${last ? `<p style="font-size:.73rem;color:var(--muted);margin-top:.3rem;">Últ. serviço: ${escHtml(last.service)}</p>` : ''}
         </div>
       </div>
     `;
@@ -1013,8 +933,11 @@ async function renderClients() {
 ============================================================ */
 function openModal() {
   const sel = document.getElementById('mService');
+  const items = SALON_CONFIG
+    ? [...(SALON_CONFIG.servicos||[]), ...(SALON_CONFIG.combos||[])]
+    : [];
   sel.innerHTML = '<option value="">— Selecione —</option>' +
-    SERVICES_LIST.map(s=>`<option value="${escHtml(s.name)}|${s.duration}|${s.price}">${escHtml(s.name)} (${formatDuration(s.duration)})</option>`).join('');
+    items.map(s=>`<option value="${escHtml(s.nome)}|${s.duracao}|${s.preco}">${escHtml(s.nome)} (${formatDuration(s.duracao)})</option>`).join('');
   document.getElementById('mDate').min = todayStr();
   document.getElementById('modalMsg').className = 'alert-msg';
   document.getElementById('modalOverlay').classList.add('open');
@@ -1065,7 +988,8 @@ document.getElementById('btnExport').addEventListener('click', async ()=>{
   const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
-  a.href=url; a.download=`agendamentos_studio_beauty_${todayStr()}.csv`;
+  const slug = SALON_CONFIG?.salao?.slug || 'salao';
+  a.href=url; a.download=`agendamentos_${slug}_${todayStr()}.csv`;
   document.body.appendChild(a); a.click();
   document.body.removeChild(a); URL.revokeObjectURL(url);
 });
@@ -1074,22 +998,21 @@ document.getElementById('btnExport').addEventListener('click', async ()=>{
    SETTINGS
 ============================================================ */
 document.getElementById('btnChangePass').addEventListener('click', async ()=>{
-  const curr  = document.getElementById('currPass').value;
   const nw    = document.getElementById('newPass').value;
   const conf  = document.getElementById('confPass').value;
   const msgEl = document.getElementById('passMsg');
   msgEl.className = 'alert-msg';
 
-  const auth     = getAuth();
-  const currHash = await sha256(curr);
-  if (currHash !== auth.passHash) { msgEl.textContent='Senha atual incorreta.'; msgEl.classList.add('error'); return; }
-  if (nw.length < 4)              { msgEl.textContent='A nova senha deve ter pelo menos 4 caracteres.'; msgEl.classList.add('error'); return; }
-  if (nw !== conf)                { msgEl.textContent='As senhas não conferem.'; msgEl.classList.add('error'); return; }
+  if (nw.length < 4) { msgEl.textContent='A nova senha deve ter pelo menos 4 caracteres.'; msgEl.classList.add('error'); return; }
+  if (nw !== conf)   { msgEl.textContent='As senhas não conferem.'; msgEl.classList.add('error'); return; }
 
-  auth.passHash = await sha256(nw);
-  localStorage.setItem(AUTH_KEY, JSON.stringify(auth));
-  msgEl.textContent='Senha alterada com sucesso!'; msgEl.classList.add('success');
-  ['currPass','newPass','confPass'].forEach(id=>document.getElementById(id).value='');
+  const r = await adminFetch('PATCH', '/admin/settings', { admin_pass: nw });
+  if (r.ok) {
+    msgEl.textContent='Senha alterada com sucesso!'; msgEl.classList.add('success');
+    ['newPass','confPass'].forEach(id=>document.getElementById(id).value='');
+  } else {
+    msgEl.textContent='Erro ao salvar. Tente novamente.'; msgEl.classList.add('error');
+  }
 });
 
 document.getElementById('btnChangeUser').addEventListener('click', async ()=>{
@@ -1097,14 +1020,14 @@ document.getElementById('btnChangeUser').addEventListener('click', async ()=>{
   const msgEl = document.getElementById('userMsg');
   msgEl.className = 'alert-msg';
   if (!nw) { msgEl.textContent='Informe o novo usuário.'; msgEl.classList.add('error'); return; }
-  const auth = getAuth();
-  auth.userHash    = await sha256(nw);
-  auth.displayName = nw;
-  localStorage.setItem(AUTH_KEY, JSON.stringify(auth));
-  msgEl.textContent='Usuário alterado com sucesso!'; msgEl.classList.add('success');
-  document.getElementById('sidebarUsername').textContent = nw;
-  document.getElementById('sidebarInitial').textContent  = nw[0].toUpperCase();
-  document.getElementById('newUsername').value='';
+
+  const r = await adminFetch('PATCH', '/admin/settings', { admin_user: nw });
+  if (r.ok) {
+    msgEl.textContent='Usuário alterado com sucesso!'; msgEl.classList.add('success');
+    document.getElementById('newUsername').value='';
+  } else {
+    msgEl.textContent='Erro ao salvar. Tente novamente.'; msgEl.classList.add('error');
+  }
 });
 
 
@@ -1273,43 +1196,8 @@ document.getElementById('hamburger').addEventListener('click', ()=>{
 document.getElementById('filterClient').addEventListener('input', renderClients);
 
 /* ============================================================
-   LOGIN LOGIC
+   ADMIN FETCH HELPER
 ============================================================ */
-document.getElementById('btnLogin').addEventListener('click', attemptLogin);
-['loginUser','loginPass'].forEach(id=>{
-  document.getElementById(id).addEventListener('keydown', e=>{ if(e.key==='Enter') attemptLogin(); });
-});
-
-async function attemptLogin() {
-  const u    = document.getElementById('loginUser').value.trim();
-  const p    = document.getElementById('loginPass').value;
-  const auth = getAuth();
-  if (auth && await sha256(u) === auth.userHash && await sha256(p) === auth.passHash) {
-    sessionStorage.setItem(SESSION_KEY, '1');
-    // Obtém token de admin do servidor para operações com RLS bypass
-    try {
-      const r = await fetch('/admin/auth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: u, password: p })
-      });
-      if (r.ok) {
-        const { token } = await r.json();
-        sessionStorage.setItem('admin_token', token);
-      }
-    } catch(e) { console.warn('Admin token não obtido:', e); }
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('appShell').classList.add('visible');
-    initApp();
-  } else {
-    const err = document.getElementById('loginError');
-    err.style.display = 'block';
-    setTimeout(()=>err.style.display='none', 3000);
-  }
-}
-
-function adminToken() { return sessionStorage.getItem('admin_token') || ''; }
-
 async function adminFetch(method, path, body) {
   const r = await fetch(path, {
     method,
@@ -1319,13 +1207,55 @@ async function adminFetch(method, path, body) {
   return r;
 }
 
-function initApp() {
-  const auth = getAuth();
-  const name = auth?.displayName || 'Admin';
-  document.getElementById('sidebarUsername').textContent = name;
-  document.getElementById('sidebarInitial').textContent  = name[0].toUpperCase();
+/* ============================================================
+   LOGIN LOGIC
+============================================================ */
+document.getElementById('btnLogin').addEventListener('click', attemptLogin);
+['loginUser','loginPass'].forEach(id=>{
+  document.getElementById(id).addEventListener('keydown', e=>{ if(e.key==='Enter') attemptLogin(); });
+});
 
-  // Topbar date
+async function attemptLogin() {
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  try {
+    const r = await fetch('/admin/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: u, password: p })
+    });
+    if (r.ok) {
+      const { token } = await r.json();
+      sessionStorage.setItem(TOKEN_KEY, token);
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('appShell').classList.add('visible');
+      initApp();
+    } else {
+      const err = document.getElementById('loginError');
+      err.style.display = 'block';
+      setTimeout(()=>err.style.display='none', 3000);
+    }
+  } catch(e) {
+    console.error('Login error:', e);
+  }
+}
+
+async function initApp() {
+  // Carrega config do salão (nome, serviços, combos)
+  try {
+    const r = await fetch('/config');
+    if (r.ok) {
+      SALON_CONFIG = await r.json();
+      const nome = SALON_CONFIG.salao?.nome || 'Painel';
+      document.getElementById('sidebarSalonName').textContent = nome;
+      document.getElementById('loginSalonName').textContent   = nome;
+      document.title = `Admin — ${nome}`;
+    }
+  } catch(e) { console.warn('Config não carregada:', e); }
+
+  document.getElementById('sidebarUsername').textContent = 'Admin';
+  document.getElementById('sidebarInitial').textContent  = 'A';
+
   const now = new Date();
   const days=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
   const months=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
@@ -1341,13 +1271,23 @@ function initApp() {
 /* ============================================================
    BOOT
 ============================================================ */
-initAuth().then(() => {
+(async () => {
+  // Pré-carrega nome do salão na tela de login
+  try {
+    const r = await fetch('/config');
+    if (r.ok) {
+      const cfg = await r.json();
+      const nome = cfg.salao?.nome || 'Painel';
+      document.getElementById('loginSalonName').textContent = nome;
+    }
+  } catch(e) {}
+
   if (isLoggedIn()) {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('appShell').classList.add('visible');
     initApp();
   }
-});
+})();
 </script>
 </body>
 </html>

@@ -188,6 +188,19 @@ app.post('/admin/booking', adminMiddleware, async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+app.patch('/admin/settings', adminMiddleware, async (req, res) => {
+  try {
+    if (!req.salao_id) return res.status(400).json({ error: 'Sessão sem salão vinculado.' });
+    const { admin_user, admin_pass } = req.body;
+    const updates = {};
+    if (admin_user) updates.admin_user = admin_user;
+    if (admin_pass) updates.admin_pass = admin_pass;
+    if (!Object.keys(updates).length) return res.status(400).json({ error: 'Nada para atualizar.' });
+    const { ok } = await supaFetch('PATCH', `saloes?id=eq.${req.salao_id}`, updates);
+    res.status(ok ? 200 : 500).json({ ok });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 /* ============================================================
    EMAIL DE CONFIRMAÇÃO via Resend
 ============================================================ */

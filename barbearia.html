@@ -123,9 +123,9 @@
       text-align: center;
       position: relative;
       background:
-        linear-gradient(to bottom, rgba(0,0,0,.55) 0%, rgba(0,0,0,.75) 100%),
-        url('saloes/barbearia-bh/banner.jpg') center/cover no-repeat,
-        linear-gradient(135deg, #1c1208 0%, #0a0a0a 60%, #0d0d0d 100%);
+        linear-gradient(to bottom, rgba(0,0,0,.50) 0%, rgba(0,0,0,.72) 100%),
+        url('saloes/barbearia-bh/barbearia.imagemdefundo.jpg') center/cover no-repeat,
+        linear-gradient(135deg, #1c1208 0%, #0a0a0a 100%);
     }
 
     .hero-content { position: relative; z-index: 1; padding: 0 1.5rem; }
@@ -779,7 +779,7 @@
       <a href="#hero">Início</a>
       <a href="#servicos">Serviços</a>
       <a href="#agendamento">Agendar</a>
-      <a href="#contato">Sobre</a>
+      <a href="#contato">Contato</a>
       <div id="authArea"></div>
     </nav>
     <button id="menuToggle"><i class="fa-solid fa-bars"></i></button>
@@ -792,15 +792,36 @@
     <div class="hero-icon"><i class="fa-solid fa-scissors"></i></div>
     <h1 class="hero-title" id="heroTitle">BARBEARIA<br><span style="color:var(--white)">BH</span></h1>
     <p class="hero-sub" id="heroSub">Estilo com Precisão</p>
-    <a href="#agendamento" class="btn-hero">Agendar Agora</a>
+    <a href="#agendamento" class="btn-hero">&#128197; Agendar Agora</a>
   </div>
 </section>
+
+<!-- ===== DIFERENCIAIS ===== -->
+<div style="background:var(--bg2); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+  <div class="container" style="display:grid; grid-template-columns:repeat(3,1fr); gap:0;">
+    <div style="padding:2rem 1.5rem; text-align:center; border-right:1px solid var(--border);">
+      <i class="fa-solid fa-scissors" style="color:var(--gold); font-size:1.4rem; margin-bottom:.7rem; display:block;"></i>
+      <h4 style="font-size:.85rem; letter-spacing:2px; text-transform:uppercase; margin-bottom:.3rem;">Corte Profissional</h4>
+      <p style="font-size:.78rem; color:var(--text-muted);">Técnicas modernas para cada estilo</p>
+    </div>
+    <div style="padding:2rem 1.5rem; text-align:center; border-right:1px solid var(--border);">
+      <i class="fa-solid fa-star" style="color:var(--gold); font-size:1.4rem; margin-bottom:.7rem; display:block;"></i>
+      <h4 style="font-size:.85rem; letter-spacing:2px; text-transform:uppercase; margin-bottom:.3rem;">Ambiente Premium</h4>
+      <p style="font-size:.78rem; color:var(--text-muted);">Espaço pensado para você relaxar</p>
+    </div>
+    <div style="padding:2rem 1.5rem; text-align:center;">
+      <i class="fa-solid fa-calendar-check" style="color:var(--gold); font-size:1.4rem; margin-bottom:.7rem; display:block;"></i>
+      <h4 style="font-size:.85rem; letter-spacing:2px; text-transform:uppercase; margin-bottom:.3rem;">Agendamento Online</h4>
+      <p style="font-size:.78rem; color:var(--text-muted);">Marque sem sair de casa</p>
+    </div>
+  </div>
+</div>
 
 <!-- ===== SERVIÇOS ===== -->
 <section id="servicos">
   <div class="container">
     <div class="section-header">
-      <h2>Serviços</h2>
+      <h2>Nossos Serviços</h2>
       <div class="section-divider"></div>
     </div>
     <div class="services-list" id="servicesList"></div>
@@ -811,7 +832,7 @@
 <section id="agendamento" style="background:var(--bg2)">
   <div class="container">
     <div class="section-header">
-      <h2>Agendamento</h2>
+      <h2>Agende seu Horário</h2>
       <div class="section-divider"></div>
     </div>
     <div class="booking-wrapper">
@@ -911,7 +932,7 @@
 <section id="contato">
   <div class="container">
     <div class="section-header">
-      <h2>Onde Estamos</h2>
+      <h2>Onde Nos Encontrar</h2>
       <div class="section-divider"></div>
     </div>
     <div class="contact-grid">
@@ -956,7 +977,8 @@
     <i class="fa-solid fa-scissors"></i>
     <span id="footerNome">BARBEARIA</span>
   </div>
-  <p id="footerCidade">—</p>
+  <p id="footerCidade" style="margin-bottom:.4rem;">—</p>
+  <p style="font-size:.72rem; color:#3a3a3a;">© 2025 — Todos os direitos reservados</p>
 </footer>
 
 <!-- ===== FLOAT WHATSAPP ===== -->

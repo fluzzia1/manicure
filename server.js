@@ -25,7 +25,7 @@ app.use((req, res, next) => {
 /* mapa tipo → arquivo HTML (adicione novos tipos aqui) */
 const TIPO_HTML = {
   barbearia: 'barbearia.html',
-  salao:     'index.html',
+  salao:     'studiobeauty.html',
 };
 
 app.get('/', async (req, res) => {
@@ -40,7 +40,7 @@ app.get('/', async (req, res) => {
   } catch (e) {
     console.error('Root route error:', e.message);
   }
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, 'studiobeauty.html'));
 });
 
 app.use(express.static(__dirname));
